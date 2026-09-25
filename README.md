@@ -59,7 +59,7 @@ button opens that **save's progress** instead of the plain local book.
 
 ### Local quest progress
 
-Inside the quest book, the **floppy-disk button** in the bottom-right button panel
+Inside the quest book, the **save icon button** in the bottom-right button panel
 opens the progress picker:
 
 - If you are already viewing a save, it opens the **team picker** for that save.
@@ -88,7 +88,7 @@ It is a client-side mod, so these values only affect your client.
 | `autoSaveDebounceSeconds` | `5` | `1`–`300` | Seconds of inactivity before pending edits are written to disk. |
 | `editorModeDefault` | `false` | — | Open the local quest book directly in editor mode. |
 | `showEntryButtons` | `true` | — | Show the top-right book button on the menu screens (the key binding still works). |
-| `showSaveProgressButton` | `true` | — | Show the floppy-disk progress button inside the quest book. |
+| `showSaveProgressButton` | `true` | — | Show the save-icon progress button inside the quest book. |
 
 ## Data and backups
 

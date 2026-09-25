@@ -1,6 +1,5 @@
 package dev.wdlpiaoyi.ftbquestsprelude.client;
 
-import dev.ftb.mods.ftblibrary.icon.Icon;
 import dev.ftb.mods.ftblibrary.icon.Icons;
 import dev.ftb.mods.ftblibrary.ui.ContextMenuItem;
 import dev.ftb.mods.ftblibrary.ui.Panel;
@@ -27,9 +26,6 @@ import java.util.List;
  */
 public class TeamPickerScreen extends AbstractButtonListScreen {
 
-    /** FTB Teams' own "my team" icon, as used by its sidebar button. */
-    private static final Icon TEAM_ICON = Icon.getIcon("ftbteams:textures/teams.png");
-
     private final Path worldRoot;
     private final List<SaveProgress.TeamInfo> teams;
     private final Screen launcher;
@@ -48,7 +44,7 @@ public class TeamPickerScreen extends AbstractButtonListScreen {
     @Override
     public void addButtons(Panel panel) {
         panel.add(SimpleTextButton.create(panel,
-                Component.translatable("ftbquests_prelude.save_progress.switch_save"), FloppyIcon.INSTANCE,
+                Component.translatable("ftbquests_prelude.save_progress.switch_save"), PreludeIcons.save(),
                 button -> {
                     Minecraft.getInstance().setScreen(launcher);
                     new SavePickerScreen(launcher).openGui();
@@ -101,7 +97,7 @@ public class TeamPickerScreen extends AbstractButtonListScreen {
         private final SaveProgress.TeamInfo team;
 
         TeamButton(Panel panel, SaveProgress.TeamInfo team) {
-            super(panel, Component.literal(team.name()), TEAM_ICON);
+            super(panel, Component.literal(team.name()), PreludeIcons.TEAM);
             this.team = team;
             setHeight(16);
         }

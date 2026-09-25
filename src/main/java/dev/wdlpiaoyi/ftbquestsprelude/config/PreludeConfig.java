@@ -57,7 +57,7 @@ public final class PreludeConfig {
         public final ForgeConfigSpec.BooleanValue showEntryButtons;
 
         /**
-         * Show the "local quest progress" floppy-disk button inside the native quest book, which
+         * Show the "local quest progress" save-icon button inside the native quest book, which
          * opens the save/team picker.
          */
         public final ForgeConfigSpec.BooleanValue showSaveProgressButton;
@@ -91,7 +91,7 @@ public final class PreludeConfig {
                     .define("showEntryButtons", true);
 
             showSaveProgressButton = builder
-                    .comment("Show the 'local quest progress' floppy-disk button inside the native quest book.")
+                    .comment("Show the 'local quest progress' save-icon button inside the native quest book.")
                     .define("showSaveProgressButton", true);
 
             builder.pop();

@@ -19,7 +19,7 @@ import java.util.List;
 public class SaveProgressButton extends TabButton {
 
     public SaveProgressButton(Panel panel) {
-        super(panel, Component.translatable("ftbquests_prelude.save_progress.title"), FloppyIcon.INSTANCE);
+        super(panel, Component.translatable("ftbquests_prelude.save_progress.title"), PreludeIcons.save());
     }
 
     @Override
