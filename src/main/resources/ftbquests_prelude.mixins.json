@@ -7,8 +7,9 @@
   "mixins": [],
   "client": [
     "BaseC2SMessageMixin",
-    "ChangeChapterGroupMessageAccessor",
     "ChangeProgressMessageMixin",
+    "ChapterMixin",
+    "ChangeChapterGroupMessageAccessor",
     "ChapterPanelChapterButtonMixin",
     "ClientQuestFileAccessor",
     "ClientQuestFileMixin",
