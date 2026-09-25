@@ -1,5 +1,7 @@
 # FTB Quests: Prelude
 
+**English** | [简体中文](README.zh_cn.md)
+
 An unofficial client-side addon for **FTB Quests** on **Minecraft 1.20.1 (Forge)**.
 It lets you open the quest book **outside a world** — at the main menu, on the world
 selection/creation screens and on the loading screen — and browse a single-player
