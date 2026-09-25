@@ -142,7 +142,7 @@ public final class PreludeClientEvents {
                 notifyUnavailable();
             }
         } else if (teams.size() > 1) {
-            Minecraft.getInstance().setScreen(SaveProgressScreen.forTeams(worldRoot, teams));
+            Minecraft.getInstance().setScreen(SaveProgressScreen.forTeams(worldRoot, teams, Minecraft.getInstance().screen));
         } else {
             notify("ftbquests_prelude.toast.no_save_progress.title", "ftbquests_prelude.toast.no_save_progress.desc");
         }

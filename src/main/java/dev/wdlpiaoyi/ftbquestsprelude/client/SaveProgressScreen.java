@@ -46,15 +46,23 @@ public class SaveProgressScreen extends Screen {
     }
 
     public static SaveProgressScreen forSaves() {
+        return forSaves(Minecraft.getInstance().screen);
+    }
+
+    public static SaveProgressScreen forSaves(Screen returnScreen) {
         return new SaveProgressScreen(
                 Component.translatable("ftbquests_prelude.save_progress.title"),
-                false, null, List.of(), SaveProgress.listSaves(), Minecraft.getInstance().screen);
+                false, null, List.of(), SaveProgress.listSaves(), returnScreen);
     }
 
     public static SaveProgressScreen forTeams(Path worldRoot, List<SaveProgress.TeamInfo> teams) {
+        return forTeams(worldRoot, teams, Minecraft.getInstance().screen);
+    }
+
+    public static SaveProgressScreen forTeams(Path worldRoot, List<SaveProgress.TeamInfo> teams, Screen returnScreen) {
         return new SaveProgressScreen(
                 Component.translatable("ftbquests_prelude.save_progress.choose_team"),
-                true, worldRoot, teams, List.of(), Minecraft.getInstance().screen);
+                true, worldRoot, teams, List.of(), returnScreen);
     }
 
     private int itemCount() {
@@ -114,6 +122,8 @@ public class SaveProgressScreen extends Screen {
         try {
             if (pickingTeam) {
                 UUID teamId = teams.get(index).id();
+                // Restore the target screen first so the quest screen's "back" returns to it.
+                Minecraft.getInstance().setScreen(returnScreen);
                 if (!LocalQuestSession.openSaveProgress(worldRoot, teamId)) {
                     Minecraft.getInstance().getToasts().addToast(new net.minecraft.client.gui.components.toasts.SystemToast(
                             net.minecraft.client.gui.components.toasts.SystemToast.SystemToastIds.PERIODIC_NOTIFICATION,
@@ -130,9 +140,10 @@ public class SaveProgressScreen extends Screen {
                             Component.translatable("ftbquests_prelude.toast.no_save_progress.title"),
                             Component.translatable("ftbquests_prelude.toast.no_save_progress.desc")));
                 } else if (teams.size() == 1) {
+                    Minecraft.getInstance().setScreen(returnScreen);
                     LocalQuestSession.openSaveProgress(worldRoot, teams.get(0).id());
                 } else {
-                    Minecraft.getInstance().setScreen(forTeams(worldRoot, teams));
+                    Minecraft.getInstance().setScreen(forTeams(worldRoot, teams, returnScreen));
                 }
             }
         } catch (Throwable t) {
