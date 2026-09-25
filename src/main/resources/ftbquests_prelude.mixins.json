@@ -6,6 +6,7 @@
   "refmap": "ftbquests_prelude.refmap.json",
   "mixins": [],
   "client": [
+    "BaseC2SMessageMixin",
     "ClientQuestFileAccessor",
     "ClientQuestFileMixin",
     "TeamDataMixin",

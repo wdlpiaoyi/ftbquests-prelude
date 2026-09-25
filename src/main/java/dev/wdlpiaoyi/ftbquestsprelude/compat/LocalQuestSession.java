@@ -28,7 +28,6 @@ public final class LocalQuestSession {
 
     private final ClientQuestFile file;
     private final Path questsDir;
-    private QuestScreen screen;
 
     private LocalQuestSession(ClientQuestFile file, Path questsDir) {
         this.file = file;
@@ -48,7 +47,8 @@ public final class LocalQuestSession {
     }
 
     /**
-     * Loads the local quest data (once) and shows the native quest screen.
+     * Loads the local quest data (reloading it if a world session invalidated it) and shows the
+     * native quest screen.
      *
      * @return {@code false} if FTB Quests is unusable or there is no quest data to show
      */
@@ -65,6 +65,13 @@ public final class LocalQuestSession {
         }
 
         try {
+            // A real server session replaces the client quest file (and invalidates ours), so
+            // reload from disk whenever our cached instance is no longer the active one.
+            if (active != null && (ClientQuestFile.INSTANCE != active.file || !ClientQuestFile.exists())) {
+                FTBQuestsPrelude.LOGGER.info("[Prelude] Local quest session is stale, reloading from disk.");
+                active = null;
+            }
+
             if (active == null) {
                 active = new LocalQuestSession(load(dir), dir);
             }
@@ -104,11 +111,14 @@ public final class LocalQuestSession {
         return file;
     }
 
+    /**
+     * Creates a fresh screen each time. This is important: FTB Library captures the currently
+     * displayed screen as the screen's {@code prevScreen} in its constructor, so reusing a cached
+     * instance would always return to whichever screen was open the first time.
+     */
     private void show() {
-        if (screen == null) {
-            screen = new QuestScreen(file, null);
-        }
-        screen.openGui();
-        screen.refreshWidgets();
+        QuestScreen questScreen = new QuestScreen(file, null);
+        questScreen.openGui();
+        questScreen.refreshWidgets();
     }
 }

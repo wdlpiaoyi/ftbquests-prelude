@@ -6,6 +6,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.gui.screens.worldselection.CreateWorldScreen;
+import net.minecraft.client.gui.screens.worldselection.SelectWorldScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ScreenEvent;
@@ -29,7 +30,7 @@ public final class PreludeClientEvents {
     @SubscribeEvent
     public static void onScreenInit(ScreenEvent.Init.Post event) {
         Screen screen = event.getScreen();
-        if (!(screen instanceof TitleScreen) && !(screen instanceof CreateWorldScreen)) {
+        if (!(screen instanceof TitleScreen) && !(screen instanceof CreateWorldScreen) && !(screen instanceof SelectWorldScreen)) {
             return;
         }
 
