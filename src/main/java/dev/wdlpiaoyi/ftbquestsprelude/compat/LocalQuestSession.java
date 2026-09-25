@@ -5,6 +5,8 @@ import dev.ftb.mods.ftbquests.client.FTBQuestsClient;
 import dev.ftb.mods.ftbquests.client.gui.quests.QuestScreen;
 import dev.ftb.mods.ftbquests.quest.TeamData;
 import dev.wdlpiaoyi.ftbquestsprelude.FTBQuestsPrelude;
+import dev.wdlpiaoyi.ftbquestsprelude.backup.BackupManager;
+import dev.wdlpiaoyi.ftbquestsprelude.config.PreludeConfig;
 import net.minecraft.Util;
 import net.minecraftforge.fml.loading.FMLPaths;
 import org.jetbrains.annotations.Nullable;
@@ -16,6 +18,9 @@ import java.nio.file.Path;
  * Loads the on-disk quest data at {@code <config>/ftbquests/quests} into a client-side quest file
  * and shows the native FTB Quests screen, without a server connection.
  *
+ * <p>In editor mode, edits made through the native GUI are applied locally (see
+ * {@link LocalEditBridge}) and persisted back to disk with an automatic backup.
+ *
  * <p>All FTB Quests types stay inside this class; callers only use the boolean API.
  */
 public final class LocalQuestSession {
@@ -26,8 +31,15 @@ public final class LocalQuestSession {
     @Nullable
     private static LocalQuestSession active;
 
+    /** Client tick counter, used for save debouncing. */
+    private static long tickCounter;
+
     private final ClientQuestFile file;
     private final Path questsDir;
+
+    private boolean editing;
+    private boolean dirty;
+    private long lastEditTick;
 
     private LocalQuestSession(ClientQuestFile file, Path questsDir) {
         this.file = file;
@@ -44,6 +56,45 @@ public final class LocalQuestSession {
 
     public static Path getActiveQuestsDir() {
         return active != null ? active.questsDir : getQuestsDir();
+    }
+
+    public static boolean isEditing() {
+        return active != null && active.editing;
+    }
+
+    public static boolean isEditing(ClientQuestFile file) {
+        return active != null && active.file == file && active.editing;
+    }
+
+    public static void toggleEditing() {
+        if (active != null) {
+            active.editing = !active.editing;
+            FTBQuestsPrelude.LOGGER.info("[Prelude] Local editor mode {}", active.editing ? "enabled" : "disabled");
+            if (!active.editing) {
+                active.saveIfDirty();
+            }
+        }
+    }
+
+    /** Marks the local quest data as changed; the save is debounced by {@link #tick()}. */
+    public static void markDirty() {
+        if (active != null) {
+            active.dirty = true;
+            active.lastEditTick = tickCounter;
+        }
+    }
+
+    /** Called once per client tick; flushes pending local edits after the configured debounce. */
+    public static void tick() {
+        tickCounter++;
+        LocalQuestSession session = active;
+        if (session == null || !session.dirty) {
+            return;
+        }
+        long debounceTicks = (long) PreludeConfig.COMMON.autoSaveDebounceSeconds.get() * 20L;
+        if (tickCounter - session.lastEditTick >= debounceTicks) {
+            session.save();
+        }
     }
 
     /**
@@ -74,6 +125,7 @@ public final class LocalQuestSession {
 
             if (active == null) {
                 active = new LocalQuestSession(load(dir), dir);
+                active.editing = PreludeConfig.COMMON.editorModeDefault.get();
             }
             active.show();
             return true;
@@ -84,9 +136,10 @@ public final class LocalQuestSession {
         }
     }
 
-    /** Reloads quest data from disk on the next open. */
+    /** Saves pending changes and discards the local quest data. */
     public static void invalidate() {
         if (active != null) {
+            active.saveIfDirty();
             try {
                 active.file.deleteChildren();
                 active.file.deleteSelf();
@@ -105,6 +158,9 @@ public final class LocalQuestSession {
         data.setLocked(false);
         file.selfTeamData = data;
 
+        // Allows FTB Quests' own "edit mode" button to show up; canEdit() itself is handled by a mixin.
+        file.setEditorPermission(true);
+
         ClientQuestFile.INSTANCE = file;
 
         FTBQuestsPrelude.LOGGER.info("[Prelude] Loaded local quest data from {}", dir);
@@ -120,5 +176,23 @@ public final class LocalQuestSession {
         QuestScreen questScreen = new QuestScreen(file, null);
         questScreen.openGui();
         questScreen.refreshWidgets();
+    }
+
+    private void saveIfDirty() {
+        if (dirty) {
+            save();
+        }
+    }
+
+    private void save() {
+        try {
+            BackupManager.backupDirectory(questsDir, "quests");
+            file.writeDataFull(questsDir);
+            BackupManager.prune(PreludeConfig.COMMON.backupCount.get());
+            FTBQuestsPrelude.LOGGER.info("[Prelude] Saved local quest data to {}", questsDir);
+        } catch (Throwable t) {
+            FTBQuestsPrelude.LOGGER.error("[Prelude] Failed to save local quest data", t);
+        }
+        dirty = false;
     }
 }

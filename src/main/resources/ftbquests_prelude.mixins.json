@@ -7,15 +7,24 @@
   "mixins": [],
   "client": [
     "BaseC2SMessageMixin",
+    "ChangeChapterGroupMessageAccessor",
+    "ChapterPanelChapterButtonMixin",
     "ClientQuestFileAccessor",
     "ClientQuestFileMixin",
-    "TeamDataMixin",
+    "CollectRewardsButtonMixin",
+    "CreateObjectMessageAccessor",
+    "CreateTaskAtMessageAccessor",
+    "DeleteObjectMessageAccessor",
+    "EditObjectMessageAccessor",
+    "MoveChapterGroupMessageAccessor",
+    "MoveChapterMessageAccessor",
+    "MoveMovableMessageAccessor",
     "OtherButtonsPanelBottomMixin",
     "QuestButtonMixin",
+    "QuestScreenMixin",
+    "ReorderItemMessageAccessor",
     "RewardButtonMixin",
-    "CollectRewardsButtonMixin",
-    "ChapterPanelChapterButtonMixin",
-    "QuestScreenMixin"
+    "TeamDataMixin"
   ],
   "injectors": {
     "defaultRequire": 1

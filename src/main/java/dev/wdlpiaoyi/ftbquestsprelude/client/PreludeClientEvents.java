@@ -50,6 +50,9 @@ public final class PreludeClientEvents {
         if (event.phase != TickEvent.Phase.END) {
             return;
         }
+
+        LocalQuestSession.tick();
+
         while (PreludeKeyMappings.OPEN_LOCAL_BOOK.consumeClick()) {
             tryOpen();
         }
