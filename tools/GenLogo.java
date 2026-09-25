@@ -16,12 +16,23 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 
 /**
- * Generates the mod logo (src/main/resources/logo.png), an original drawing: an open quest book in
- * front of a rising sun ("Prelude" = before the journey begins).
+ * Generates the mod logo: an open quest book in front of a rising sun ("Prelude" = before the
+ * journey begins).
  *
- * <p>Run with any JDK 17+: {@code java tools/GenLogo.java src/main/resources/logo.png}
+ * <p>The art is authored in a fixed {@value #BASE}x{@value #BASE} coordinate space and scaled to the
+ * requested square output size, so it renders crisply at any resolution.
+ *
+ * <p>Run with any JDK 17+: {@code java tools/GenLogo.java <out.png> [size] [dipTop] [dipBot]}
+ *
+ * <ul>
+ *   <li>{@code src/main/resources/logo.png} — 128, shown in the mod list</li>
+ *   <li>{@code docs/curseforge-avatar.png} — 400, which is the size CurseForge requires for avatars</li>
+ * </ul>
  */
 public final class GenLogo {
+
+    /** Everything below is authored in this coordinate space and scaled to the requested size. */
+    private static final int BASE = 128;
 
     private GenLogo() {
     }
@@ -29,28 +40,29 @@ public final class GenLogo {
     public static void main(String[] args) throws Exception {
         System.setProperty("java.awt.headless", "true");
 
-        int size = 128;
+        int size = args.length > 1 ? Integer.parseInt(args[1]) : BASE;
         // How far the centre (the gutter) sits below the outer page edges, for the top and bottom
         // edges. The centre being lower is what makes it read as an open book rather than a tent.
-        int dipTop = args.length > 1 ? Integer.parseInt(args[1]) : 4;
-        int dipBot = args.length > 2 ? Integer.parseInt(args[2]) : 9;
+        int dipTop = args.length > 2 ? Integer.parseInt(args[2]) : 4;
+        int dipBot = args.length > 3 ? Integer.parseInt(args[3]) : 9;
 
         BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = image.createGraphics();
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
         g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+        g.scale(size / (double) BASE, size / (double) BASE);
 
-        Shape badge = new RoundRectangle2D.Float(0.5f, 0.5f, size - 1f, size - 1f, 26f, 26f);
+        Shape badge = new RoundRectangle2D.Float(0.5f, 0.5f, BASE - 1f, BASE - 1f, 26f, 26f);
         g.setClip(badge);
 
         // Dawn sky.
         g.setPaint(new GradientPaint(0f, 0f, new Color(0x0E, 0x16, 0x2C),
-                0f, size * 0.86f, new Color(0xC7, 0x5B, 0x3A)));
-        g.fillRect(0, 0, size, size);
+                0f, BASE * 0.86f, new Color(0xC7, 0x5B, 0x3A)));
+        g.fillRect(0, 0, BASE, BASE);
 
-        int sunX = size / 2;
-        int sunY = (int) (size * 0.80f);
+        int sunX = BASE / 2;
+        int sunY = (int) (BASE * 0.80f);
 
         // Halo.
         g.setPaint(new RadialGradientPaint(new Point2D.Float(sunX, sunY), 48f,
@@ -58,7 +70,7 @@ public final class GenLogo {
                 new Color[]{new Color(0xFF, 0xD2, 0x8A, 210),
                         new Color(0xFF, 0xA0, 0x50, 80),
                         new Color(0xFF, 0xA0, 0x50, 0)}));
-        g.fillRect(0, 0, size, size);
+        g.fillRect(0, 0, BASE, BASE);
 
         // Rays.
         g.setStroke(new BasicStroke(2f));
@@ -75,11 +87,11 @@ public final class GenLogo {
 
         // Ground.
         g.setColor(new Color(0x0B, 0x0F, 0x1C));
-        g.fill(new Rectangle2D.Float(0f, size * 0.855f, size, size));
+        g.fill(new Rectangle2D.Float(0f, BASE * 0.855f, BASE, BASE));
         g.setColor(new Color(0x35, 0x3F, 0x60));
-        g.fill(new Rectangle2D.Float(0f, size * 0.855f, size, 1.5f));
+        g.fill(new Rectangle2D.Float(0f, BASE * 0.855f, BASE, 1.5f));
 
-        drawBook(g, size, dipTop, dipBot);
+        drawBook(g, dipTop, dipBot);
 
         // Stars.
         g.setColor(new Color(0xFF, 0xF3, 0xD0, 210));
@@ -96,17 +108,17 @@ public final class GenLogo {
         g.draw(badge);
         g.setStroke(new BasicStroke(1f));
         g.setColor(new Color(0x6C, 0x7A, 0xB0, 140));
-        g.draw(new RoundRectangle2D.Float(2.5f, 2.5f, size - 5f, size - 5f, 22f, 22f));
+        g.draw(new RoundRectangle2D.Float(2.5f, 2.5f, BASE - 5f, BASE - 5f, 22f, 22f));
 
         g.dispose();
 
         File out = new File(args.length > 0 ? args[0] : "logo.png");
         ImageIO.write(image, "PNG", out);
-        System.out.println("Wrote " + out.getAbsolutePath());
+        System.out.println("Wrote " + out.getAbsolutePath() + " (" + size + "x" + size + ")");
     }
 
-    private static void drawBook(Graphics2D g, int size, int dipTop, int dipBot) {
-        int cx = size / 2;
+    private static void drawBook(Graphics2D g, int dipTop, int dipBot) {
+        int cx = BASE / 2;
         int topY = 62;
         int botY = 98;
 
@@ -144,7 +156,7 @@ public final class GenLogo {
         g.fill(new Polygon(
                 new int[]{cx - 2, cx + 2, cx + 2, cx - 2},
                 new int[]{coverTop + 2 + dipTop, coverTop + 2 + dipTop,
-                        coverBot + dipBot + 0, coverBot + dipBot + 0}, 4));
+                        coverBot + dipBot, coverBot + dipBot}, 4));
 
         // Text lines, following the page slope.
         g.setColor(new Color(0x9A, 0xA2, 0xB4));

@@ -1,0 +1,1 @@
+Adds main-menu buttons that open the FTB Quests book outside a world, with local editing and single-player progress viewing.

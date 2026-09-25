@@ -1,92 +1,102 @@
-# FTB Quests: Prelude
+A client-side mod for Minecraft 1.20.1 (Forge) that opens the **FTB Quests** quest book outside a
+world: from the main menu, the world selection and creation screens, and the world loading screen.
+It also displays a single-player save's quest progress in the same book.
 
-**Open the quest book without entering a world.**
+**Requires [FTB Quests](https://www.curseforge.com/minecraft/mc-mods/ftb-quests-forge)** and its
+dependencies (FTB Library, FTB Teams, Architectury API). Client-side only — a server does not need it.
 
-An unofficial client-side addon for FTB Quests: browse and edit your local quest files from the main
-menu, the world selection / creation screens and the world loading screen — and view a single-player
-save's quest progress from the same book.
+## What it adds
 
-> This project is not affiliated with or endorsed by FTB (Feed The Beast).
+FTB Quests' book can only be opened from inside a world. This mod adds entry points for it in screens
+where it is normally unreachable:
 
-## The problem it solves
+| Screen | What the button opens |
+| --- | --- |
+| Title screen | The local book — the quests in `<config>/ftbquests/quests` |
+| World selection | The highlighted save's quest progress |
+| World creation | The local book |
+| World loading | The world being loaded, if it has saved progress |
 
-FTB Quests' quest book can only be opened after you are in a world. Modpack authors tweaking quests or
-checking progress, and anyone who wants a look at the quest line before starting a save, has to load
-into a world first.
+A key binding (unbound by default, under **Options → Controls → Key Binds**) does the same as the
+button.
 
-This mod moves that quest book outside the world.
+## Local editing
 
-## Features
+Editor mode makes every quest visible and editable: quests, chapters, tasks, rewards and reward
+tables. Changes are written straight to `<config>/ftbquests/quests`. Turn editor mode on with the
+book's editor button, or with `editorModeDefault = true` in the config.
 
-- **Quest book outside a world** — a book button in the top-right corner of the title, world
-  selection, world creation and world loading screens, plus a key binding (unbound by default; set it
-  under Options → Controls → Key Binds).
-- **Local editor mode** — when enabled, all quests are visible and editable: quests, chapters, tasks,
-  rewards and reward tables. Changes are written directly to `<config>/ftbquests/quests`.
-- **Safe writing** — debounced auto-save, save-on-close, and an automatic timestamped backup before
-  every save (retention is configurable). Orphaned chapter / reward-table files are pruned.
-- **Single-player save progress** — open any save's quest progress inside the book and switch between
-  its teams. Each team row shows its member count; right-click a team for the member list.
-- **Native look** — screens, themes and icons all reuse FTB Quests / FTB Library assets, so it matches
-  the rest of FTB Quests. Resource packs that restyle FTB icons apply here too.
+Writing is guarded, so a mistake is recoverable:
 
-## Requirements
+- debounced auto-save while you edit;
+- an extra save when the screen closes;
+- a timestamped backup before every save, with a configurable retention count;
+- orphaned chapter and reward-table files are cleaned up on save.
 
-- Minecraft **1.20.1**
-- Forge **47.x**
-- **FTB Quests** (and its dependencies: FTB Library, FTB Teams, Architectury API)
-- **Client-side** (`displayTest = IGNORE_ALL_VERSION`) — a client with this mod can join servers that
-  do not have it
+## Single-player save progress
 
-## Installation
+The save icon button in the book's bottom-right button panel opens the progress picker:
 
-1. Install Minecraft 1.20.1 + Forge 47.x.
-2. Install FTB Quests and its dependencies.
-3. Put `ftbquests_prelude-1.0.0.jar` into your `mods/` folder.
+- while you are viewing a save, it opens that save's team list;
+- otherwise it opens a save picker first, and the team list has a **Switch save…** entry.
 
-## Usage
-
-**Opening the local quest book** — Click the book button in the top-right corner, or bind a key under
-Options → Controls → Key Binds → FTB Quests: Prelude. When a world is highlighted on the select-world
-screen (or a world is loading), the button opens **that save's progress** instead.
-
-**Local quest progress** — Use the save icon button in the bottom-right button panel of the quest book.
-If you are already viewing a save it opens that save's team list directly; otherwise it opens the save
-picker first. Hover a team to see the member count, or **right-click** it to open the member list.
-
-**Editor mode** — Toggle it with the editor button in the book, or set `editorModeDefault = true`.
+Each team row shows its member count. Hover it for the member names, or right-click it for the full
+member list. Selecting a team loads that team's progress into the open book.
 
 ## Configuration
 
-`<config>/ftbq_prelude/ftbquests_prelude-common.toml`
+The config file is `<config>/ftbq_prelude/ftbquests_prelude-common.toml`.
 
-- `backupCount` (default `10`, range `0`–`1000`) — number of timestamped backups to keep; `0` disables backups.
-- `autoSaveOnClose` (default `true`) — save pending edits when the local quest screen closes.
-- `autoSaveDebounceSeconds` (default `5`, range `1`–`300`) — seconds of inactivity before pending edits are written to disk.
-- `editorModeDefault` (default `false`) — open the local quest book in editor mode.
-- `showEntryButtons` (default `true`) — show the book button on the menu screens (the key binding still works).
-- `showSaveProgressButton` (default `true`) — show the progress button inside the quest book.
+| Option | Default | Range | Description |
+| --- | --- | --- | --- |
+| `backupCount` | `10` | 0–1000 | Timestamped backups to keep. `0` disables backups. |
+| `autoSaveOnClose` | `true` | — | Save pending edits when the screen closes. |
+| `autoSaveDebounceSeconds` | `5` | 1–300 | Seconds of inactivity before pending edits are saved. |
+| `editorModeDefault` | `false` | — | Open the local book in editor mode. |
+| `showEntryButtons` | `true` | — | Show the menu-screen buttons (the key binding still works). |
+| `showSaveProgressButton` | `true` | — | Show the progress button inside the book. |
 
-## Data and backups
+## Compatibility
 
-- `<config>/ftbquests/quests` — the local quest data that is read and edited.
-- `<config>/ftbq_prelude/backups` — timestamped backups of the quests folder.
-- `<save>/ftbquests/<team-uuid>.snbt` — a single-player save's quest progress (read only).
-- `<save>/ftbteams/...` — FTB Teams data (read only, used to list teams and members).
+- **Minecraft** 1.20.1
+- **Loader** Forge 47.x
+- **Side** Client only (`displayTest = IGNORE_ALL_VERSION`, so clients may join servers without it)
+- **Dependencies** FTB Quests `2001.4.x` or newer (built against `2001.4.22`), plus FTB Library,
+  FTB Teams and Architectury API
 
 ## Known limitations
 
-- **Not a replacement for server sync**: in multiplayer, quest data and progress remain
-  server-authoritative.
+- This mod does **not** replace FTB Quests' server sync. In multiplayer, quest data and progress
+  remain server-authoritative.
 - Quest files that were never cached locally may be unavailable, so multiplayer progress is not
   guaranteed.
-- Editing multiplayer quests from the menu is not supported — use the in-world quest book.
-- Still a prototype: not every flow reuses the full native UI.
-- Team names and members are resolved from local save data; players never seen on this machine may
-  appear as a short UUID.
+- Editing multiplayer quests from these screens is not supported — use the in-world book.
+- Not every flow reuses the full native UI, so some interactions differ from the in-world book.
+- Team names and members are read from local save data; players never seen on this machine can show
+  as a short UUID.
 
-## License and credits
+## Credits and license
 
 - License: **MIT**.
-- Built on, and thanks to: FTB Quests, FTB Library, FTB Teams, Architectury API.
-- Source and issue tracker: https://github.com/wdlpiaoyi/ftbquests-prelude
+- Built on **FTB Quests**, **FTB Library**, **FTB Teams** and the **Architectury API**; thanks to
+  their authors.
+- This project is not affiliated with or endorsed by FTB (Feed The Beast).
+
+---
+
+## 简体中文
+
+Minecraft 1.20.1 (Forge) 的客户端模组：**不进入世界也能打开 FTB Quests 任务书** —— 主菜单、选择世界、创建世界、世界加载界面均可打开，并能在同一本书里查看单人存档的任务进度。
+
+- **本地编辑**：编辑模式下所有任务可见可改（任务、章节、目标、奖励、奖励表），改动直接写入 `<config>/ftbquests/quests`；带防抖自动保存、关闭即保存、保存前时间戳备份，并清理孤立文件。
+- **存档进度**：任务书右下角的保存图标按钮可切换存档与队伍；队伍行显示成员数，悬停看成员名，右键展开成员列表。
+- **配置**：`<config>/ftbq_prelude/ftbquests_prelude-common.toml`（备份数量、自动保存、编辑模式默认、入口开关等）。
+- **需要**：FTB Quests 及其依赖（FTB Library、FTB Teams、Architectury API）；仅需客户端安装。
+- **注意**：不替代服务端同步，多人数据与进度仍以服务端为准。许可：MIT。
+
+---
+
+## Links
+
+- Source code and issue tracker: <https://github.com/wdlpiaoyi/ftbquests-prelude>
+- Changelog: <https://github.com/wdlpiaoyi/ftbquests-prelude/blob/main/CHANGELOG.md>

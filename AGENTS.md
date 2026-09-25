@@ -73,10 +73,13 @@ messages. Dev runtime is under `run/` (git-ignored):
 - `Reference/FTB-Quests/` — read-only upstream FTB Quests source (git-ignored). The best place to
   check real FTBQ signatures and behaviour; never modify or commit it.
 - `环境提示.md` — user-maintained machine / environment notes (git-ignored). Do not edit.
-- `tools/GenLogo.java` — draws `src/main/resources/logo.png`, then rebuild:
-  `java tools/GenLogo.java src/main/resources/logo.png [dipTop] [dipBot]` (run with a JDK 17 `java`).
-- `docs/curseforge-description*.md` — CurseForge listing text (CurseForge requires English; the
-  `.zh_cn` file is the Chinese reference).
+- `tools/GenLogo.java` — draws the logo (run with a JDK 17 `java`, then rebuild):
+  `java tools/GenLogo.java <out.png> [size] [dipTop] [dipBot]`.
+  `src/main/resources/logo.png` is 128 (mod list); `docs/curseforge-avatar.png` is 400, because
+  CurseForge requires avatars to be exactly 400x400.
+- `docs/curseforge-*.md|txt|png` — CurseForge listing assets: the description (English first, then
+  Simplified Chinese — CurseForge requires English before other languages), the one-line summary and
+  the 400x400 avatar.
 
 ## Metadata & publishing
 
