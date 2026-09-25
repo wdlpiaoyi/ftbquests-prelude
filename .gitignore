@@ -10,6 +10,9 @@ build/
 out/
 !gradle/wrapper/gradle-wrapper.jar
 
+# --- Local (machine specific) launcher, see gradlew-jdk17.bat.example ---
+/gradlew-jdk17.bat
+
 # --- Minecraft / Forge run directories ---
 run/
 runs/
@@ -21,11 +24,16 @@ run-data/
 *.ipr
 *.iws
 .vscode/
-settings.gradle.bak
+eclipse/
+.settings/
+.metadata/
 .classpath
 .project
-.settings/
 bin/
+*.launch
+
+# --- Maven publishing output ---
+mcmodsrepo/
 
 # --- Java ---
 *.class
@@ -36,6 +44,9 @@ bin/
 logs/
 *.log
 hs_err_pid*
+
+# --- Forge MDK misc ---
+forge*changelog.txt
 
 # --- OS ---
 .DS_Store

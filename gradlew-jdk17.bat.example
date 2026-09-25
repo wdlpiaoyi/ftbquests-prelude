@@ -1,0 +1,22 @@
+@echo off
+REM ---------------------------------------------------------------------------
+REM Local JDK 17 launcher for Minecraft 1.20.1 / Forge.
+REM
+REM This is a TEMPLATE. Copy it next to this file as "gradlew-jdk17.bat" and set
+REM JAVA_HOME below to a local JDK 17 installation. The real file is git-ignored,
+REM so machine specific paths never end up in the repository.
+REM
+REM Then run, for example:
+REM     gradlew-jdk17.bat build
+REM     gradlew-jdk17.bat runClient
+REM ---------------------------------------------------------------------------
+
+set "JAVA_HOME=C:\path\to\jdk-17"
+
+if not exist "%JAVA_HOME%\bin\java.exe" (
+    echo [gradlew-jdk17] JAVA_HOME does not point to a valid JDK: "%JAVA_HOME%"
+    echo [gradlew-jdk17] Copy gradlew-jdk17.bat.example to gradlew-jdk17.bat and edit JAVA_HOME.
+    exit /b 1
+)
+
+call "%~dp0gradlew.bat" %*
