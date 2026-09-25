@@ -2,6 +2,10 @@
   "ftbquests_prelude.button.open_local_book": "本地任务书",
   "ftbquests_prelude.editing_mode.on": "编辑模式：开（点击关闭）",
   "ftbquests_prelude.editing_mode.off": "编辑模式：关（点击开启）",
+  "ftbquests_prelude.toast.no_data.title": "本地任务书",
+  "ftbquests_prelude.toast.no_data.desc": "未找到任务数据：config/ftbquests/quests",
+  "ftbquests_prelude.toast.unavailable.title": "FTB Quests: Prelude",
+  "ftbquests_prelude.toast.unavailable.desc": "FTB Quests 缺失或版本不受支持",
   "key.ftbquests_prelude.open_local_book": "打开本地任务书",
   "key.categories.ftbquests_prelude": "FTB Quests: Prelude"
 }
