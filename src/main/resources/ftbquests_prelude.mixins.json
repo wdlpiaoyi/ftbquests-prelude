@@ -6,7 +6,15 @@
   "refmap": "ftbquests_prelude.refmap.json",
   "mixins": [],
   "client": [
-    "ClientQuestFileAccessor"
+    "ClientQuestFileAccessor",
+    "ClientQuestFileMixin",
+    "TeamDataMixin",
+    "OtherButtonsPanelBottomMixin",
+    "QuestButtonMixin",
+    "RewardButtonMixin",
+    "CollectRewardsButtonMixin",
+    "ChapterPanelChapterButtonMixin",
+    "QuestScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1
