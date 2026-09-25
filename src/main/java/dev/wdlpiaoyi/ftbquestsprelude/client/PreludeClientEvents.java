@@ -4,6 +4,7 @@ import dev.wdlpiaoyi.ftbquestsprelude.FTBQuestsPrelude;
 import dev.wdlpiaoyi.ftbquestsprelude.compat.FTBQuestsCompat;
 import dev.wdlpiaoyi.ftbquestsprelude.compat.LocalQuestSession;
 import dev.wdlpiaoyi.ftbquestsprelude.compat.SaveProgress;
+import dev.wdlpiaoyi.ftbquestsprelude.config.PreludeConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.LevelLoadingScreen;
@@ -52,6 +53,10 @@ public final class PreludeClientEvents {
         try {
             Screen screen = event.getScreen();
             if (!isSupportedScreen(screen)) {
+                return;
+            }
+
+            if (!PreludeConfig.COMMON.showEntryButtons.get()) {
                 return;
             }
 

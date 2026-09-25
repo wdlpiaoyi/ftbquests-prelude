@@ -1,5 +1,6 @@
 package dev.wdlpiaoyi.ftbquestsprelude.client;
 
+import dev.ftb.mods.ftblibrary.icon.Icon;
 import dev.ftb.mods.ftblibrary.icon.Icons;
 import dev.ftb.mods.ftblibrary.ui.ContextMenuItem;
 import dev.ftb.mods.ftblibrary.ui.Panel;
@@ -25,6 +26,9 @@ import java.util.List;
  * context menu with the team's members.
  */
 public class TeamPickerScreen extends AbstractButtonListScreen {
+
+    /** FTB Teams' own "my team" icon, as used by its sidebar button. */
+    private static final Icon TEAM_ICON = Icon.getIcon("ftbteams:textures/teams.png");
 
     private final Path worldRoot;
     private final List<SaveProgress.TeamInfo> teams;
@@ -97,7 +101,7 @@ public class TeamPickerScreen extends AbstractButtonListScreen {
         private final SaveProgress.TeamInfo team;
 
         TeamButton(Panel panel, SaveProgress.TeamInfo team) {
-            super(panel, Component.literal(team.name()), Icons.INFO_GRAY);
+            super(panel, Component.literal(team.name()), TEAM_ICON);
             this.team = team;
             setHeight(16);
         }
@@ -109,7 +113,7 @@ public class TeamPickerScreen extends AbstractButtonListScreen {
             if (button.isRight()) {
                 List<ContextMenuItem> members = new ArrayList<>();
                 for (String member : team.memberNames()) {
-                    members.add(new ContextMenuItem(Component.literal(member), Icons.INFO_GRAY, b -> {
+                    members.add(new ContextMenuItem(Component.literal(member), Icons.PLAYER, b -> {
                     }));
                 }
                 getGui().openContextMenu(members);

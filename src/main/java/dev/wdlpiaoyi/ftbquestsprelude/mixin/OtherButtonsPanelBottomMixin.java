@@ -3,6 +3,7 @@ package dev.wdlpiaoyi.ftbquestsprelude.mixin;
 import dev.ftb.mods.ftblibrary.ui.Panel;
 import dev.ftb.mods.ftbquests.client.gui.quests.OtherButtonsPanelBottom;
 import dev.wdlpiaoyi.ftbquestsprelude.client.SaveProgressButton;
+import dev.wdlpiaoyi.ftbquestsprelude.config.PreludeConfig;
 import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -27,6 +28,9 @@ public abstract class OtherButtonsPanelBottomMixin {
 
     @Inject(method = "addWidgets", remap = false, at = @At("TAIL"))
     private void prelude$addSaveProgressButton(CallbackInfo ci) {
+        if (!PreludeConfig.COMMON.showSaveProgressButton.get()) {
+            return;
+        }
         Panel self = (Panel) (Object) this;
         self.add(new SaveProgressButton(self));
     }
