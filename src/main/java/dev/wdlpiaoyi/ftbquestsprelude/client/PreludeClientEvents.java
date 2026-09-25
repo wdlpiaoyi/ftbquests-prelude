@@ -29,8 +29,9 @@ import java.util.List;
  * binding.
  *
  * <p>On the select-world screen (with a highlighted save) and the level loading screen, the button
- * opens the quest progress of that save by default; hold shift to open the plain local book instead.
- * On the title screen, shift-click opens the save picker.
+ * opens the quest progress of that save by default; the plain local book is used elsewhere. Browsing
+ * any save's progress is available from a button inside the quest book itself (see
+ * {@link SaveProgressButton}).
  *
  * <p>Every handler is defensive: any failure is logged and degrades to "no entry point" rather than
  * crashing the game.
@@ -114,19 +115,10 @@ public final class PreludeClientEvents {
 
     private static void tryOpen() {
         try {
-            Screen current = Minecraft.getInstance().screen;
-            boolean shift = Screen.hasShiftDown();
-
             // From the select-world / loading screens, default to the highlighted/loading save.
             Path worldRoot = SaveProgress.selectedWorldRoot();
-            if (worldRoot != null && !shift) {
+            if (worldRoot != null) {
                 openSaveOrDefault(worldRoot);
-                return;
-            }
-
-            // Shift-click on the title screen: browse any save's progress.
-            if (shift && current instanceof TitleScreen) {
-                Minecraft.getInstance().setScreen(SaveProgressScreen.forSaves());
                 return;
             }
 
