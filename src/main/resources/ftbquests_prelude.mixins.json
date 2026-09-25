@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "dev.wdlpiaoyi.ftbquestsprelude.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "ftbquests_prelude.refmap.json",
+  "mixins": [],
+  "client": [
+    "ClientQuestFileAccessor"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

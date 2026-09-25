@@ -13,6 +13,9 @@ out/
 # --- Local (machine specific) launcher, see gradlew-jdk17.bat.example ---
 /gradlew-jdk17.bat
 
+# --- Local environment notes (machine specific) ---
+/环境提示.md
+
 # --- Minecraft / Forge run directories ---
 run/
 runs/

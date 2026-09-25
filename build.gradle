@@ -3,6 +3,7 @@ plugins {
     id 'idea'
     id 'maven-publish'
     id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+    id 'org.spongepowered.mixin' version '0.7.+'
 }
 
 version = mod_version
@@ -87,6 +88,9 @@ repositories {
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
+    // Mixin annotation processor: generates ftbquests_prelude.refmap.json.
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+
     // FTB Quests and its required libraries. fg.deobf() remaps the published
     // artifacts into the development mappings so we can compile against them
     // and actually run the mod in the dev environment.
@@ -94,6 +98,13 @@ dependencies {
     implementation fg.deobf("dev.ftb.mods:ftb-library-forge:${ftblibrary_version}")
     implementation fg.deobf("dev.ftb.mods:ftb-teams-forge:${ftbteams_version}")
     implementation fg.deobf("dev.architectury:architectury-forge:${architectury_version}")
+}
+
+// Mixin: register the refmap and the mixin config. MixinGradle injects the config
+// into the dev run configurations and adds a MixinConfigs manifest entry to the jar.
+mixin {
+    add sourceSets.main, 'ftbquests_prelude.refmap.json'
+    config 'ftbquests_prelude.mixins.json'
 }
 
 // Expand declared properties into mods.toml / pack.mcmeta.
