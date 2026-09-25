@@ -2,12 +2,12 @@ package dev.wdlpiaoyi.ftbquestsprelude.client;
 
 import dev.wdlpiaoyi.ftbquestsprelude.FTBQuestsPrelude;
 import dev.wdlpiaoyi.ftbquestsprelude.compat.LocalQuestSession;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.gui.screens.worldselection.CreateWorldScreen;
 import net.minecraft.client.gui.screens.worldselection.SelectWorldScreen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.event.TickEvent;
@@ -15,14 +15,17 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 /**
- * Client entry points for the local quest book: a button on the title screen and the
- * world-creation screen, plus a key binding.
+ * Client entry points for the local quest book: a small icon button in the top-right corner of the
+ * title screen and the world selection/creation screens, plus a key binding.
  */
 @Mod.EventBusSubscriber(modid = FTBQuestsPrelude.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public final class PreludeClientEvents {
 
-    private static final int BUTTON_WIDTH = 120;
-    private static final int BUTTON_HEIGHT = 20;
+    /** FTB Quests' own quest book texture (16x16). */
+    private static final ResourceLocation BOOK_ICON = new ResourceLocation("ftbquests", "textures/item/book.png");
+    private static final int ICON_SIZE = 16;
+    private static final int BUTTON_SIZE = 18;
+    private static final int MARGIN = 4;
 
     private PreludeClientEvents() {
     }
@@ -34,12 +37,12 @@ public final class PreludeClientEvents {
             return;
         }
 
-        // Top-left corner, away from the centred vanilla UI.
-        event.addListener(Button.builder(
-                        Component.translatable("ftbquests_prelude.button.open_local_book"),
-                        button -> tryOpen())
-                .bounds(4, 4, BUTTON_WIDTH, BUTTON_HEIGHT)
-                .build());
+        // Top-right corner, so it does not overlap the tab bar on the world creation screen.
+        event.addListener(new IconButton(
+                screen.width - BUTTON_SIZE - MARGIN, MARGIN,
+                BUTTON_SIZE, BOOK_ICON, ICON_SIZE,
+                button -> tryOpen(),
+                Component.translatable("ftbquests_prelude.button.open_local_book")));
     }
 
     @SubscribeEvent
