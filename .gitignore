@@ -1,0 +1,43 @@
+# -----------------------------------------------------------------------------
+# Third-party / reference resources
+# Everything under Reference/ is external source or binaries kept locally only.
+# -----------------------------------------------------------------------------
+Reference/
+
+# --- Gradle ---
+.gradle/
+build/
+out/
+!gradle/wrapper/gradle-wrapper.jar
+
+# --- Minecraft / Forge run directories ---
+run/
+runs/
+run-data/
+
+# --- IDE / editors ---
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+settings.gradle.bak
+.classpath
+.project
+.settings/
+bin/
+
+# --- Java ---
+*.class
+*.jar
+!gradle/wrapper/gradle-wrapper.jar
+
+# --- Logs / crash reports / temp ---
+logs/
+*.log
+hs_err_pid*
+
+# --- OS ---
+.DS_Store
+Thumbs.db
+desktop.ini
