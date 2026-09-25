@@ -24,13 +24,25 @@ public class IconButton extends Button {
 
     @Override
     protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        if (isHoveredOrFocused()) {
-            graphics.fill(getX(), getY(), getX() + getWidth(), getY() + getHeight(), 0x40FFFFFF);
-        }
+        int x = getX();
+        int y = getY();
+        int w = getWidth();
+        int h = getHeight();
+        boolean hovered = isHoveredOrFocused();
 
-        int size = Math.min(iconTextureSize, Math.min(getWidth(), getHeight()));
-        int iconX = getX() + (getWidth() - size) / 2;
-        int iconY = getY() + (getHeight() - size) / 2;
+        // Semi-transparent background so the icon stays readable over any screen behind it.
+        graphics.fill(x, y, x + w, y + h, hovered ? 0xC0404040 : 0x90000000);
+
+        // Subtle 1px border.
+        int border = hovered ? 0xFFFFFFFF : 0x60FFFFFF;
+        graphics.fill(x, y, x + w, y + 1, border);
+        graphics.fill(x, y + h - 1, x + w, y + h, border);
+        graphics.fill(x, y, x + 1, y + h, border);
+        graphics.fill(x + w - 1, y, x + w, y + h, border);
+
+        int size = Math.min(iconTextureSize, Math.min(w, h));
+        int iconX = x + (w - size) / 2;
+        int iconY = y + (h - size) / 2;
         graphics.blit(icon, iconX, iconY, 0, 0, size, size, iconTextureSize, iconTextureSize);
     }
 }
