@@ -6,7 +6,6 @@ import dev.wdlpiaoyi.ftbquestsprelude.compat.LocalQuestSession;
 import dev.wdlpiaoyi.ftbquestsprelude.compat.SaveProgress;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.events.GuiEventListener;
-import net.minecraft.client.gui.components.toasts.SystemToast;
 import net.minecraft.client.gui.screens.LevelLoadingScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
@@ -24,14 +23,14 @@ import java.nio.file.Path;
 import java.util.List;
 
 /**
- * Client entry points for the local quest book: a small icon button in the top-right corner of the
- * title screen, the world selection/creation screens and the world loading screen, plus a key
- * binding.
+ * Client entry points for the local quest book: a small floppy-disk button in the top-right corner
+ * of the title screen, the world selection/creation screens and the world loading screen, plus a
+ * key binding.
  *
  * <p>On the select-world screen (with a highlighted save) and the level loading screen, the button
  * opens the quest progress of that save by default; the plain local book is used elsewhere. Browsing
- * any save's progress is available from a button inside the quest book itself (see
- * {@link SaveProgressButton}).
+ * any save's progress is available from a button inside the quest book itself
+ * (see {@link SaveProgressButton}).
  *
  * <p>Every handler is defensive: any failure is logged and degrades to "no entry point" rather than
  * crashing the game.
@@ -123,7 +122,7 @@ public final class PreludeClientEvents {
             }
 
             if (!LocalQuestSession.openAndShow()) {
-                notifyUnavailable();
+                notifyOpenFailed();
             }
         } catch (Throwable t) {
             FTBQuestsPrelude.LOGGER.error("[Prelude] Failed to open the local quest book", t);
@@ -131,31 +130,23 @@ public final class PreludeClientEvents {
     }
 
     private static void openSaveOrDefault(Path worldRoot) {
-        if (!SaveProgress.hasProgress(worldRoot)) {
-            notify("ftbquests_prelude.toast.no_save_progress.title", "ftbquests_prelude.toast.no_save_progress.desc");
-            return;
-        }
-
         List<SaveProgress.TeamInfo> teams = SaveProgress.listTeams(worldRoot);
-        if (teams.size() == 1) {
+        if (teams.isEmpty()) {
+            Notifications.noSaveProgress();
+        } else if (teams.size() == 1) {
             if (!LocalQuestSession.openSaveProgress(worldRoot, teams.get(0).id())) {
-                notifyUnavailable();
+                Notifications.unavailable();
             }
-        } else if (teams.size() > 1) {
-            Minecraft.getInstance().setScreen(SaveProgressScreen.forTeams(worldRoot, teams, Minecraft.getInstance().screen));
         } else {
-            notify("ftbquests_prelude.toast.no_save_progress.title", "ftbquests_prelude.toast.no_save_progress.desc");
+            new TeamPickerScreen(worldRoot, teams, Minecraft.getInstance().screen).openGui();
         }
     }
 
-    private static void notifyUnavailable() {
-        boolean ftbQuestsOk = FTBQuestsCompat.canUseLocalQuestBook();
-        notify(ftbQuestsOk ? "ftbquests_prelude.toast.no_data.title" : "ftbquests_prelude.toast.unavailable.title",
-                ftbQuestsOk ? "ftbquests_prelude.toast.no_data.desc" : "ftbquests_prelude.toast.unavailable.desc");
-    }
-
-    private static void notify(String titleKey, String descriptionKey) {
-        SystemToast.add(Minecraft.getInstance().getToasts(), SystemToast.SystemToastIds.PERIODIC_NOTIFICATION,
-                Component.translatable(titleKey), Component.translatable(descriptionKey));
+    private static void notifyOpenFailed() {
+        if (FTBQuestsCompat.canUseLocalQuestBook()) {
+            Notifications.noData();
+        } else {
+            Notifications.unavailable();
+        }
     }
 }

@@ -43,6 +43,10 @@ public final class LocalQuestSession {
     @Nullable
     private static LocalQuestSession active;
 
+    /** Save whose progress is currently shown, or null for the plain local book. */
+    @Nullable
+    private static Path currentSaveRoot;
+
     /** Client tick counter, used for save debouncing. */
     private static long tickCounter;
 
@@ -68,6 +72,12 @@ public final class LocalQuestSession {
 
     public static boolean isActive() {
         return active != null;
+    }
+
+    /** The save whose progress is currently shown, or null for the plain local book. */
+    @Nullable
+    public static Path getCurrentSaveRoot() {
+        return currentSaveRoot;
     }
 
     public static Path getActiveQuestsDir() {
@@ -130,6 +140,7 @@ public final class LocalQuestSession {
         if (!prepareSession()) {
             return false;
         }
+        currentSaveRoot = null;
         try {
             active.file.selfTeamData = active.defaultTeamData;
             active.show();
@@ -137,6 +148,36 @@ public final class LocalQuestSession {
         } catch (Throwable t) {
             FTBQuestsPrelude.LOGGER.error("[Prelude] Failed to open the local quest book", t);
             disposeActive();
+            return false;
+        }
+    }
+
+    /** Opens (or reopens) the local quest book without changing the currently shown team. */
+    public static boolean openBook() {
+        if (!prepareSession()) {
+            return false;
+        }
+        try {
+            active.show();
+            return true;
+        } catch (Throwable t) {
+            FTBQuestsPrelude.LOGGER.error("[Prelude] Failed to open the local quest book", t);
+            disposeActive();
+            return false;
+        }
+    }
+
+    /** Applies a save's team progress without opening a screen (the caller refreshes the book). */
+    public static boolean applySaveProgress(Path worldRoot, UUID teamId) {
+        if (!prepareSession()) {
+            return false;
+        }
+        try {
+            active.applyTeam(worldRoot, teamId);
+            currentSaveRoot = worldRoot;
+            return true;
+        } catch (Throwable t) {
+            FTBQuestsPrelude.LOGGER.error("[Prelude] Failed to apply save quest progress", t);
             return false;
         }
     }
@@ -153,6 +194,7 @@ public final class LocalQuestSession {
         }
         try {
             active.applyTeam(worldRoot, teamId);
+            currentSaveRoot = worldRoot;
             active.show();
             return true;
         } catch (Throwable t) {
@@ -168,6 +210,7 @@ public final class LocalQuestSession {
             active.saveIfDirty();
         }
         disposeActive();
+        currentSaveRoot = null;
     }
 
     private static boolean prepareSession() {
