@@ -4,6 +4,7 @@ import dev.wdlpiaoyi.ftbquestsprelude.FTBQuestsPrelude;
 import dev.wdlpiaoyi.ftbquestsprelude.compat.FTBQuestsCompat;
 import dev.wdlpiaoyi.ftbquestsprelude.compat.LocalQuestSession;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.components.toasts.SystemToast;
 import net.minecraft.client.gui.screens.LevelLoadingScreen;
 import net.minecraft.client.gui.screens.Screen;
@@ -62,6 +63,29 @@ public final class PreludeClientEvents {
                 || screen instanceof SelectWorldScreen
                 || screen instanceof CreateWorldScreen
                 || screen instanceof LevelLoadingScreen;
+    }
+
+    /**
+     * The world loading screen overrides {@code render} without calling {@code super.render}, so its
+     * widgets (including our button) are never drawn. Clicking still works because input is
+     * dispatched to children, so we just render the button ourselves.
+     */
+    @SubscribeEvent
+    public static void onScreenRender(ScreenEvent.Render.Post event) {
+        try {
+            Screen screen = event.getScreen();
+            if (!(screen instanceof LevelLoadingScreen)) {
+                return;
+            }
+            for (GuiEventListener listener : screen.children()) {
+                if (listener instanceof IconButton button) {
+                    button.renderSelf(event.getGuiGraphics(), event.getMouseX(), event.getMouseY(),
+                            event.getPartialTick());
+                }
+            }
+        } catch (Throwable t) {
+            FTBQuestsPrelude.LOGGER.error("[Prelude] Failed to render the local quest book button", t);
+        }
     }
 
     @SubscribeEvent

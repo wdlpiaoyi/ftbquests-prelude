@@ -1,10 +1,10 @@
 package dev.wdlpiaoyi.ftbquestsprelude.compat;
 
+import dev.ftb.mods.ftblibrary.util.client.ClientUtils;
 import dev.ftb.mods.ftbquests.client.ClientQuestFile;
 import dev.ftb.mods.ftbquests.client.FTBQuestsClient;
 import dev.ftb.mods.ftbquests.client.gui.quests.QuestScreen;
 import dev.ftb.mods.ftbquests.quest.TeamData;
-import dev.ftb.mods.ftblibrary.util.client.ClientUtils;
 import dev.wdlpiaoyi.ftbquestsprelude.FTBQuestsPrelude;
 import dev.wdlpiaoyi.ftbquestsprelude.backup.BackupManager;
 import dev.wdlpiaoyi.ftbquestsprelude.config.PreludeConfig;
@@ -12,8 +12,13 @@ import net.minecraft.Util;
 import net.minecraftforge.fml.loading.FMLPaths;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Stream;
 
 /**
  * Loads the on-disk quest data at {@code <config>/ftbquests/quests} into a client-side quest file
@@ -41,6 +46,7 @@ public final class LocalQuestSession {
     private boolean editing;
     private boolean dirty;
     private long lastEditTick;
+    private long fingerprint;
 
     private LocalQuestSession(ClientQuestFile file, Path questsDir) {
         this.file = file;
@@ -107,8 +113,10 @@ public final class LocalQuestSession {
     }
 
     /**
-     * Loads the local quest data (reloading it if a world session invalidated it) and shows the
-     * native quest screen.
+     * Loads the local quest data and shows the native quest screen.
+     *
+     * <p>The data is reloaded from disk when a real server session replaced it, or when the quest
+     * files changed on disk (for example the author edited or removed them externally).
      *
      * @return {@code false} if FTB Quests is unusable or there is no quest data to show
      */
@@ -125,22 +133,20 @@ public final class LocalQuestSession {
         }
 
         try {
-            // A real server session replaces the client quest file (and invalidates ours), so
-            // reload from disk whenever our cached instance is no longer the active one.
-            if (active != null && (ClientQuestFile.INSTANCE != active.file || !ClientQuestFile.exists())) {
-                FTBQuestsPrelude.LOGGER.info("[Prelude] Local quest session is stale, reloading from disk.");
-                active = null;
-            }
+            long diskFingerprint = computeFingerprint(dir);
+            boolean needReload = active == null
+                    || ClientQuestFile.INSTANCE != active.file
+                    || !ClientQuestFile.exists()
+                    || active.fingerprint != diskFingerprint;
 
-            if (active == null) {
-                active = new LocalQuestSession(load(dir), dir);
-                active.editing = PreludeConfig.COMMON.editorModeDefault.get();
+            if (needReload) {
+                reload(dir, diskFingerprint);
             }
             active.show();
             return true;
         } catch (Throwable t) {
             FTBQuestsPrelude.LOGGER.error("[Prelude] Failed to open the local quest book", t);
-            active = null;
+            disposeActive();
             return false;
         }
     }
@@ -149,14 +155,31 @@ public final class LocalQuestSession {
     public static void invalidate() {
         if (active != null) {
             active.saveIfDirty();
+        }
+        disposeActive();
+    }
+
+    private static void reload(Path dir, long diskFingerprint) {
+        boolean wasEditing = active != null && active.editing;
+        disposeActive();
+
+        LocalQuestSession session = new LocalQuestSession(load(dir), dir);
+        session.editing = wasEditing;
+        session.fingerprint = diskFingerprint;
+        active = session;
+        FTBQuestsPrelude.LOGGER.info("[Prelude] Loaded local quest data from {}", dir);
+    }
+
+    private static void disposeActive() {
+        if (active != null) {
             try {
                 active.file.deleteChildren();
                 active.file.deleteSelf();
             } catch (Throwable ignored) {
                 // best effort
             }
+            active = null;
         }
-        active = null;
     }
 
     private static ClientQuestFile load(Path dir) {
@@ -171,8 +194,6 @@ public final class LocalQuestSession {
         file.setEditorPermission(true);
 
         ClientQuestFile.INSTANCE = file;
-
-        FTBQuestsPrelude.LOGGER.info("[Prelude] Loaded local quest data from {}", dir);
         return file;
     }
 
@@ -197,11 +218,69 @@ public final class LocalQuestSession {
         try {
             BackupManager.backupDirectory(questsDir, "quests");
             file.writeDataFull(questsDir);
+            pruneOrphanFiles();
+            fingerprint = computeFingerprint(questsDir);
             BackupManager.prune(PreludeConfig.COMMON.backupCount.get());
             FTBQuestsPrelude.LOGGER.info("[Prelude] Saved local quest data to {}", questsDir);
         } catch (Throwable t) {
             FTBQuestsPrelude.LOGGER.error("[Prelude] Failed to save local quest data", t);
         }
         dirty = false;
+    }
+
+    /**
+     * FTB Quests writes chapter/reward-table files but never removes the files of renamed or
+     * deleted objects, which leaves stale duplicates behind. Delete any {@code .snbt} file that we
+     * did not just write.
+     */
+    private void pruneOrphanFiles() {
+        Set<String> chapters = new HashSet<>();
+        file.getAllChapters().forEach(chapter -> chapters.add(chapter.getFilename() + ".snbt"));
+        pruneDir(questsDir.resolve("chapters"), chapters);
+
+        Set<String> tables = new HashSet<>();
+        file.getRewardTables().forEach(table -> tables.add(table.getFilename() + ".snbt"));
+        pruneDir(questsDir.resolve("reward_tables"), tables);
+    }
+
+    private static void pruneDir(Path dir, Set<String> keep) {
+        if (!Files.isDirectory(dir)) {
+            return;
+        }
+        try (Stream<Path> stream = Files.list(dir)) {
+            List<Path> orphans = stream
+                    .filter(path -> path.getFileName().toString().endsWith(".snbt"))
+                    .filter(path -> !keep.contains(path.getFileName().toString()))
+                    .toList();
+            for (Path orphan : orphans) {
+                try {
+                    Files.deleteIfExists(orphan);
+                    FTBQuestsPrelude.LOGGER.info("[Prelude] Removed orphan quest file {}", orphan.getFileName());
+                } catch (IOException e) {
+                    FTBQuestsPrelude.LOGGER.warn("[Prelude] Could not remove orphan quest file {}", orphan, e);
+                }
+            }
+        } catch (IOException e) {
+            FTBQuestsPrelude.LOGGER.warn("[Prelude] Could not scan {}", dir, e);
+        }
+    }
+
+    /** Cheap change detector over the quest data directory (file names, sizes and timestamps). */
+    private static long computeFingerprint(Path dir) {
+        if (!Files.isDirectory(dir)) {
+            return -1L;
+        }
+        long hash = 0L;
+        try (Stream<Path> stream = Files.walk(dir)) {
+            List<Path> files = stream.filter(Files::isRegularFile).sorted().toList();
+            for (Path path : files) {
+                hash = hash * 31L + dir.relativize(path).toString().hashCode();
+                hash = hash * 31L + Files.size(path);
+                hash = hash * 31L + Files.getLastModifiedTime(path).toMillis();
+            }
+        } catch (IOException e) {
+            return -2L;
+        }
+        return hash;
     }
 }

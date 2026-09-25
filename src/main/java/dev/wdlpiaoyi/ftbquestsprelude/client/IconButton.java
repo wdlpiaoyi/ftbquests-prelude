@@ -22,6 +22,16 @@ public class IconButton extends Button {
         setTooltip(Tooltip.create(message));
     }
 
+    /**
+     * Renders this button manually. Needed on screens whose {@code render} does not call
+     * {@code super.render} (e.g. {@code LevelLoadingScreen}), so widgets are otherwise never drawn.
+     */
+    public void renderSelf(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        if (visible) {
+            render(graphics, mouseX, mouseY, partialTick);
+        }
+    }
+
     @Override
     protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         int x = getX();
