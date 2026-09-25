@@ -1,5 +1,7 @@
 {
   "ftbquests_prelude.button.open_local_book": "Local Quest Book",
+  "ftbquests_prelude.editing_mode.on": "Editor mode: ON (click to turn off)",
+  "ftbquests_prelude.editing_mode.off": "Editor mode: OFF (click to turn on)",
   "key.ftbquests_prelude.open_local_book": "Open Local Quest Book",
   "key.categories.ftbquests_prelude": "FTB Quests: Prelude"
 }

@@ -6,7 +6,7 @@ import org.apache.commons.lang3.tuple.Pair;
 /**
  * Configuration for FTB Quests: Prelude.
  *
- * <p>All values are common config, stored at {@code <config>/ftbquests_prelude-common.toml}.
+ * <p>All values are common config, stored at {@code <config>/ftbq_prelude/ftbquests_prelude-common.toml}.
  */
 public final class PreludeConfig {
 

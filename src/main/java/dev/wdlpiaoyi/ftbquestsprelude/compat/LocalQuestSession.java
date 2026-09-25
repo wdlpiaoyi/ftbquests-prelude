@@ -4,6 +4,7 @@ import dev.ftb.mods.ftbquests.client.ClientQuestFile;
 import dev.ftb.mods.ftbquests.client.FTBQuestsClient;
 import dev.ftb.mods.ftbquests.client.gui.quests.QuestScreen;
 import dev.ftb.mods.ftbquests.quest.TeamData;
+import dev.ftb.mods.ftblibrary.util.client.ClientUtils;
 import dev.wdlpiaoyi.ftbquestsprelude.FTBQuestsPrelude;
 import dev.wdlpiaoyi.ftbquestsprelude.backup.BackupManager;
 import dev.wdlpiaoyi.ftbquestsprelude.config.PreludeConfig;
@@ -91,6 +92,14 @@ public final class LocalQuestSession {
         if (session == null || !session.dirty) {
             return;
         }
+
+        // Save right away once the quest book is no longer the active screen (e.g. after ESC).
+        boolean screenOpen = ClientUtils.getCurrentGuiAs(QuestScreen.class) != null;
+        if (!screenOpen && PreludeConfig.COMMON.autoSaveOnClose.get()) {
+            session.save();
+            return;
+        }
+
         long debounceTicks = (long) PreludeConfig.COMMON.autoSaveDebounceSeconds.get() * 20L;
         if (tickCounter - session.lastEditTick >= debounceTicks) {
             session.save();

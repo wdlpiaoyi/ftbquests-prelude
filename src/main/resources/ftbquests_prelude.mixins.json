@@ -24,7 +24,8 @@
     "QuestScreenMixin",
     "ReorderItemMessageAccessor",
     "RewardButtonMixin",
-    "TeamDataMixin"
+    "TeamDataMixin",
+    "ToggleEditModeButtonMixin"
   ],
   "injectors": {
     "defaultRequire": 1

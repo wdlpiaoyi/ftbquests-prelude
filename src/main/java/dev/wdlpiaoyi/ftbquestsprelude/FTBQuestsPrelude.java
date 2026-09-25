@@ -26,12 +26,15 @@ public class FTBQuestsPrelude {
     public FTBQuestsPrelude() {
         LOGGER.info("FTB Quests: Prelude loading...");
 
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, PreludeConfig.SPEC);
+        // Create our own directory first so the config file can live inside it.
+        BackupManager.ensureRootDir();
+
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, PreludeConfig.SPEC,
+                "ftbq_prelude/ftbquests_prelude-common.toml");
 
         // Bootstrap that does not depend on config values or world state, so it can run
         // as early as mod construction (and is also exercised by data generation runs).
         FTBQuestsCompat.init();
-        BackupManager.ensureRootDir();
 
         LOGGER.info("[Prelude] Ready. FTB Quests: {} (supported={}), backup dir: {}",
                 FTBQuestsCompat.getVersion(),

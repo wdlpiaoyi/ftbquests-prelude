@@ -1,5 +1,7 @@
 {
   "ftbquests_prelude.button.open_local_book": "本地任务书",
+  "ftbquests_prelude.editing_mode.on": "编辑模式：开（点击关闭）",
+  "ftbquests_prelude.editing_mode.off": "编辑模式：关（点击开启）",
   "key.ftbquests_prelude.open_local_book": "打开本地任务书",
   "key.categories.ftbquests_prelude": "FTB Quests: Prelude"
 }
