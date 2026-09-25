@@ -175,6 +175,10 @@ Compiled and run against the FTB maven releases:
 - Team names and members are resolved from local save data; players who were never
   seen locally may appear as a short UUID.
 
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md).
+
 ## License
 
 MIT — see [LICENSE](LICENSE).
