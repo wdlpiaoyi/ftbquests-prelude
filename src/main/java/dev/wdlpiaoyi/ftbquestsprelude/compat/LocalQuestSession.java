@@ -1,5 +1,7 @@
 package dev.wdlpiaoyi.ftbquestsprelude.compat;
 
+import dev.ftb.mods.ftblibrary.snbt.SNBT;
+import dev.ftb.mods.ftblibrary.snbt.SNBTCompoundTag;
 import dev.ftb.mods.ftblibrary.util.client.ClientUtils;
 import dev.ftb.mods.ftbquests.client.ClientQuestFile;
 import dev.ftb.mods.ftbquests.client.FTBQuestsClient;
@@ -18,6 +20,7 @@ import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 /**
@@ -26,6 +29,9 @@ import java.util.stream.Stream;
  *
  * <p>In editor mode, edits made through the native GUI are applied locally (see
  * {@link LocalEditBridge}) and persisted back to disk with an automatic backup.
+ *
+ * <p>It can also display a single-player save's quest progress by loading that save's
+ * {@link TeamData} (see {@link SaveProgress}).
  *
  * <p>All FTB Quests types stay inside this class; callers only use the boolean API.
  */
@@ -47,6 +53,9 @@ public final class LocalQuestSession {
     private boolean dirty;
     private long lastEditTick;
     private long fingerprint;
+
+    @Nullable
+    private TeamData defaultTeamData;
 
     private LocalQuestSession(ClientQuestFile file, Path questsDir) {
         this.file = file;
@@ -113,39 +122,41 @@ public final class LocalQuestSession {
     }
 
     /**
-     * Loads the local quest data and shows the native quest screen.
-     *
-     * <p>The data is reloaded from disk when a real server session replaced it, or when the quest
-     * files changed on disk (for example the author edited or removed them externally).
+     * Loads the local quest data and shows the native quest screen (no player progress).
      *
      * @return {@code false} if FTB Quests is unusable or there is no quest data to show
      */
     public static boolean openAndShow() {
-        if (!FTBQuestsCompat.canUseLocalQuestBook()) {
-            FTBQuestsPrelude.LOGGER.warn("[Prelude] Cannot open local quest book: FTB Quests unavailable/unsupported.");
+        if (!prepareSession()) {
             return false;
         }
-
-        Path dir = getQuestsDir();
-        if (!Files.isDirectory(dir)) {
-            FTBQuestsPrelude.LOGGER.warn("[Prelude] No quest data folder found at {}", dir);
-            return false;
-        }
-
         try {
-            long diskFingerprint = computeFingerprint(dir);
-            boolean needReload = active == null
-                    || ClientQuestFile.INSTANCE != active.file
-                    || !ClientQuestFile.exists()
-                    || active.fingerprint != diskFingerprint;
-
-            if (needReload) {
-                reload(dir, diskFingerprint);
-            }
+            active.file.selfTeamData = active.defaultTeamData;
             active.show();
             return true;
         } catch (Throwable t) {
             FTBQuestsPrelude.LOGGER.error("[Prelude] Failed to open the local quest book", t);
+            disposeActive();
+            return false;
+        }
+    }
+
+    /**
+     * Loads the local quest data, applies the given single-player save's team progress and shows the
+     * native quest screen.
+     *
+     * @return {@code false} if FTB Quests is unusable or there is no quest data to show
+     */
+    public static boolean openSaveProgress(Path worldRoot, UUID teamId) {
+        if (!prepareSession()) {
+            return false;
+        }
+        try {
+            active.applyTeam(worldRoot, teamId);
+            active.show();
+            return true;
+        } catch (Throwable t) {
+            FTBQuestsPrelude.LOGGER.error("[Prelude] Failed to open save quest progress", t);
             disposeActive();
             return false;
         }
@@ -159,6 +170,39 @@ public final class LocalQuestSession {
         disposeActive();
     }
 
+    private static boolean prepareSession() {
+        if (!FTBQuestsCompat.canUseLocalQuestBook()) {
+            FTBQuestsPrelude.LOGGER.warn("[Prelude] Cannot open local quest book: FTB Quests unavailable/unsupported.");
+            return false;
+        }
+        Path dir = getQuestsDir();
+        if (!Files.isDirectory(dir)) {
+            FTBQuestsPrelude.LOGGER.warn("[Prelude] No quest data folder found at {}", dir);
+            return false;
+        }
+        try {
+            ensureSession(dir);
+            return true;
+        } catch (Throwable t) {
+            FTBQuestsPrelude.LOGGER.error("[Prelude] Failed to load the local quest book", t);
+            disposeActive();
+            return false;
+        }
+    }
+
+    /** (Re)loads the session if it is missing or the quest files changed on disk. */
+    private static void ensureSession(Path dir) {
+        long diskFingerprint = computeFingerprint(dir);
+        boolean needReload = active == null
+                || ClientQuestFile.INSTANCE != active.file
+                || !ClientQuestFile.exists()
+                || active.fingerprint != diskFingerprint;
+
+        if (needReload) {
+            reload(dir, diskFingerprint);
+        }
+    }
+
     private static void reload(Path dir, long diskFingerprint) {
         boolean wasEditing = active != null && active.editing;
         disposeActive();
@@ -166,6 +210,7 @@ public final class LocalQuestSession {
         LocalQuestSession session = new LocalQuestSession(load(dir), dir);
         session.editing = wasEditing;
         session.fingerprint = diskFingerprint;
+        session.defaultTeamData = session.file.selfTeamData;
         active = session;
         FTBQuestsPrelude.LOGGER.info("[Prelude] Loaded local quest data from {}", dir);
     }
@@ -195,6 +240,26 @@ public final class LocalQuestSession {
 
         ClientQuestFile.INSTANCE = file;
         return file;
+    }
+
+    /** Loads a save's {@link TeamData} and makes it the team shown by the quest screen. */
+    private void applyTeam(Path worldRoot, UUID teamId) {
+        TeamData data = file.getOrCreateTeamData(teamId);
+
+        Path teamFile = worldRoot.resolve("ftbquests").resolve(teamId + ".snbt");
+        if (Files.isRegularFile(teamFile)) {
+            try {
+                SNBTCompoundTag nbt = SNBT.read(teamFile);
+                if (nbt != null) {
+                    data.deserializeNBT(nbt);
+                }
+            } catch (Throwable t) {
+                FTBQuestsPrelude.LOGGER.warn("[Prelude] Could not read team data from {}", teamFile, t);
+            }
+        }
+
+        file.selfTeamData = data;
+        FTBQuestsPrelude.LOGGER.info("[Prelude] Showing save progress for team {}", teamId);
     }
 
     /**

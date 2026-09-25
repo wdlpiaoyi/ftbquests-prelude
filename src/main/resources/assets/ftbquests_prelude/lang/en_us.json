@@ -2,10 +2,15 @@
   "ftbquests_prelude.button.open_local_book": "Local Quest Book",
   "ftbquests_prelude.editing_mode.on": "Editor mode: ON (click to turn off)",
   "ftbquests_prelude.editing_mode.off": "Editor mode: OFF (click to turn on)",
+  "ftbquests_prelude.save_progress.title": "Local Quest Progress",
+  "ftbquests_prelude.save_progress.choose_team": "Select a team",
+  "ftbquests_prelude.save_progress.no_progress_suffix": "(no saved progress)",
   "ftbquests_prelude.toast.no_data.title": "Local Quest Book",
   "ftbquests_prelude.toast.no_data.desc": "No quest data found at config/ftbquests/quests",
   "ftbquests_prelude.toast.unavailable.title": "FTB Quests: Prelude",
   "ftbquests_prelude.toast.unavailable.desc": "FTB Quests is missing or its version is not supported",
+  "ftbquests_prelude.toast.no_save_progress.title": "FTB Quests: Prelude",
+  "ftbquests_prelude.toast.no_save_progress.desc": "This world has no saved quest progress",
   "key.ftbquests_prelude.open_local_book": "Open Local Quest Book",
   "key.categories.ftbquests_prelude": "FTB Quests: Prelude"
 }

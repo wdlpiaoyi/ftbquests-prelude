@@ -3,6 +3,7 @@ package dev.wdlpiaoyi.ftbquestsprelude.client;
 import dev.wdlpiaoyi.ftbquestsprelude.FTBQuestsPrelude;
 import dev.wdlpiaoyi.ftbquestsprelude.compat.FTBQuestsCompat;
 import dev.wdlpiaoyi.ftbquestsprelude.compat.LocalQuestSession;
+import dev.wdlpiaoyi.ftbquestsprelude.compat.SaveProgress;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.components.toasts.SystemToast;
@@ -19,10 +20,17 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
+import java.nio.file.Path;
+import java.util.List;
+
 /**
  * Client entry points for the local quest book: a small icon button in the top-right corner of the
  * title screen, the world selection/creation screens and the world loading screen, plus a key
  * binding.
+ *
+ * <p>On the select-world screen (with a highlighted save) and the level loading screen, the button
+ * opens the quest progress of that save by default; hold shift to open the plain local book instead.
+ * On the title screen, shift-click opens the save picker.
  *
  * <p>Every handler is defensive: any failure is logged and degrades to "no entry point" rather than
  * crashing the game.
@@ -106,6 +114,22 @@ public final class PreludeClientEvents {
 
     private static void tryOpen() {
         try {
+            Screen current = Minecraft.getInstance().screen;
+            boolean shift = Screen.hasShiftDown();
+
+            // From the select-world / loading screens, default to the highlighted/loading save.
+            Path worldRoot = SaveProgress.selectedWorldRoot();
+            if (worldRoot != null && !shift) {
+                openSaveOrDefault(worldRoot);
+                return;
+            }
+
+            // Shift-click on the title screen: browse any save's progress.
+            if (shift && current instanceof TitleScreen) {
+                Minecraft.getInstance().setScreen(SaveProgressScreen.forSaves());
+                return;
+            }
+
             if (!LocalQuestSession.openAndShow()) {
                 notifyUnavailable();
             }
@@ -114,15 +138,32 @@ public final class PreludeClientEvents {
         }
     }
 
+    private static void openSaveOrDefault(Path worldRoot) {
+        if (!SaveProgress.hasProgress(worldRoot)) {
+            notify("ftbquests_prelude.toast.no_save_progress.title", "ftbquests_prelude.toast.no_save_progress.desc");
+            return;
+        }
+
+        List<SaveProgress.TeamInfo> teams = SaveProgress.listTeams(worldRoot);
+        if (teams.size() == 1) {
+            if (!LocalQuestSession.openSaveProgress(worldRoot, teams.get(0).id())) {
+                notifyUnavailable();
+            }
+        } else if (teams.size() > 1) {
+            Minecraft.getInstance().setScreen(SaveProgressScreen.forTeams(worldRoot, teams));
+        } else {
+            notify("ftbquests_prelude.toast.no_save_progress.title", "ftbquests_prelude.toast.no_save_progress.desc");
+        }
+    }
+
     private static void notifyUnavailable() {
         boolean ftbQuestsOk = FTBQuestsCompat.canUseLocalQuestBook();
-        Component title = Component.translatable(ftbQuestsOk
-                ? "ftbquests_prelude.toast.no_data.title"
-                : "ftbquests_prelude.toast.unavailable.title");
-        Component description = Component.translatable(ftbQuestsOk
-                ? "ftbquests_prelude.toast.no_data.desc"
-                : "ftbquests_prelude.toast.unavailable.desc");
-        SystemToast.add(Minecraft.getInstance().getToasts(),
-                SystemToast.SystemToastIds.PERIODIC_NOTIFICATION, title, description);
+        notify(ftbQuestsOk ? "ftbquests_prelude.toast.no_data.title" : "ftbquests_prelude.toast.unavailable.title",
+                ftbQuestsOk ? "ftbquests_prelude.toast.no_data.desc" : "ftbquests_prelude.toast.unavailable.desc");
+    }
+
+    private static void notify(String titleKey, String descriptionKey) {
+        SystemToast.add(Minecraft.getInstance().getToasts(), SystemToast.SystemToastIds.PERIODIC_NOTIFICATION,
+                Component.translatable(titleKey), Component.translatable(descriptionKey));
     }
 }
