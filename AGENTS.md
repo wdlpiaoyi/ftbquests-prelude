@@ -64,6 +64,11 @@ messages. Dev runtime is under `run/` (git-ignored):
   so the in-world book stays vanilla. `isActive()` is still true after joining a world (the session is
   only dropped by the `ClientPlayerNetworkEvent.LoggingIn` handler); `isLocalBook()` compares the
   session's file against `ClientQuestFile.INSTANCE`, which the server sync replaces.
+- **A `@Redirect(method = X)` only reaches calls inside X's own method body.** A third-party mod that
+  `@Inject`s at `HEAD` and calls `cancel()` both hides our redirect (the original body never runs) and
+  runs its own code, so a null-player crash there cannot be fixed by redirecting. `UnsafeMods` (compat)
+  is the fail-safe: it either neutralises the offender's own read-only switch at runtime (never the
+  config file on disk) or refuses to open the local book with a message.
 - Outside a world `Minecraft.player` is null. Per-player FTBQ lookups (claimed rewards, pins) must use
   `LocalQuestSession.viewPlayerUuid()` (the local account UUID) rather than `Util.NIL_UUID`, or the
   save's real data is never found.

@@ -176,6 +176,12 @@ public final class LocalQuestSession {
     /** Called once per client tick; flushes pending local edits after the configured debounce. */
     public static void tick() {
         tickCounter++;
+
+        // Only keep the third-party workaround applied while the local book is actually on screen.
+        if (ClientUtils.getCurrentGuiAs(QuestScreen.class) == null) {
+            UnsafeMods.release();
+        }
+
         LocalQuestSession session = active;
         if (session == null || !session.dirty) {
             return;
@@ -318,11 +324,16 @@ public final class LocalQuestSession {
         disposeActive();
         currentSaveRoot = null;
         currentTeamId = null;
+        UnsafeMods.release();
     }
 
     private static boolean prepareSession() {
         if (!FTBQuestsCompat.canUseLocalQuestBook()) {
             FTBQuestsPrelude.LOGGER.warn("[Prelude] Cannot open local quest book: FTB Quests unavailable/unsupported.");
+            return false;
+        }
+        // Some third-party mods crash when the quest screen is rendered without a client player.
+        if (Minecraft.getInstance().player == null && !UnsafeMods.ensureSafe()) {
             return false;
         }
         Path dir = getQuestsDir();

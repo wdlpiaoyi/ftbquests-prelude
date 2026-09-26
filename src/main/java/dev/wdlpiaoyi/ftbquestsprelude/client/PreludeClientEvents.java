@@ -5,6 +5,7 @@ import dev.wdlpiaoyi.ftbquestsprelude.compat.FTBQuestsCompat;
 import dev.wdlpiaoyi.ftbquestsprelude.compat.LocalEditBridge;
 import dev.wdlpiaoyi.ftbquestsprelude.compat.LocalQuestSession;
 import dev.wdlpiaoyi.ftbquestsprelude.compat.SaveProgress;
+import dev.wdlpiaoyi.ftbquestsprelude.compat.UnsafeMods;
 import dev.wdlpiaoyi.ftbquestsprelude.config.PreludeConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.events.GuiEventListener;
@@ -155,7 +156,7 @@ public final class PreludeClientEvents {
             Notifications.noSaveProgress();
         } else if (teams.size() == 1) {
             if (!LocalQuestSession.openSaveProgress(worldRoot, teams.get(0).id())) {
-                Notifications.unavailable();
+                notifyOpenFailed();
             }
         } else {
             new TeamPickerScreen(worldRoot, teams, Minecraft.getInstance().screen).openGui();
@@ -163,7 +164,9 @@ public final class PreludeClientEvents {
     }
 
     private static void notifyOpenFailed() {
-        if (FTBQuestsCompat.canUseLocalQuestBook()) {
+        if (UnsafeMods.blocked()) {
+            Notifications.incompatibleMod();
+        } else if (FTBQuestsCompat.canUseLocalQuestBook()) {
             Notifications.noData();
         } else {
             Notifications.unavailable();

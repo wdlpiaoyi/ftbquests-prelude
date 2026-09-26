@@ -4,6 +4,19 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.1] - 2026-09-26
+
+### Fixed
+
+- **A hard client crash when another mod's quest-book mixin assumes a client player.**
+  `certain_questing_additions` injects into FTB Quests' chapter button and its handler calls
+  `Minecraft.getInstance().player.getUUID()`; because it injects at `HEAD` and cancels, the original
+  method body - and therefore this mod's null-player `@Redirect` inside it - never runs, so it cannot be
+  fixed the usual way. Opening the local book now checks for such mods first and either turns the
+  offender's own early-return switch off for the duration of the book (runtime only; the offender's
+  config file is left alone, and the value is restored as soon as the book closes) or, if that is not
+  possible, refuses to open and says so instead of crashing.
+
 ## [1.1.0] - 2026-09-26
 
 ### Fixed

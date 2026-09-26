@@ -27,6 +27,10 @@ public final class Notifications {
         show("ftbquests_prelude.toast.saved.title", "ftbquests_prelude.toast.saved.desc");
     }
 
+    public static void incompatibleMod() {
+        show("ftbquests_prelude.toast.incompatible.title", "ftbquests_prelude.toast.incompatible.desc");
+    }
+
     public static void unavailable() {
         show("ftbquests_prelude.toast.unavailable.title", "ftbquests_prelude.toast.unavailable.desc");
     }

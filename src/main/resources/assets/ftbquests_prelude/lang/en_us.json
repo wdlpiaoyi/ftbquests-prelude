@@ -16,5 +16,7 @@
   "ftbquests_prelude.toast.no_save_progress.desc": "This world has no saved quest progress",
   "ftbquests_prelude.toast.saved.title": "Local Quest Book",
   "ftbquests_prelude.toast.saved.desc": "Quests saved to config/ftbquests/quests",
-  "ftbquests_prelude.reload": "Reload quests from disk"
+  "ftbquests_prelude.reload": "Reload quests from disk",
+  "ftbquests_prelude.toast.incompatible.title": "FTB Quests: Prelude",
+  "ftbquests_prelude.toast.incompatible.desc": "Disabled here: an installed mod crashes the quest book outside a world"
 }
