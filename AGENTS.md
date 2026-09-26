@@ -107,5 +107,5 @@ messages. Dev runtime is under `run/` (git-ignored):
   `displayTest = IGNORE_ALL_VERSION`, so clients may join servers without the mod.
 - FTB artifacts come from `https://maven.ftb.dev/releases`; the required `ftbquests` dependency's
   version range is in `gradle.properties`.
-- Released as v1.0.0; `main` tracks `origin` at https://github.com/wdlpiaoyi/ftbquests-prelude
-  (`gh` is available and authenticated).
+- Releases are published on GitHub (tag `vX.Y.Z` plus the jar as an asset); `main` tracks `origin` at
+  https://github.com/wdlpiaoyi/ftbquests-prelude (`gh` is available and authenticated).

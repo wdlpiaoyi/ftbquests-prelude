@@ -15,7 +15,7 @@ save's quest progress from the same book.
 | Loader | Forge 47.x |
 | Side | Client (works in single-player; no effect on a server) |
 | Depends on | FTB Quests (`ftbquests`) |
-| Status | Working prototype |
+| Status | Released (see [Known limitations](#known-limitations)) |
 
 > This project is not affiliated with or endorsed by FTB (Feed The Beast).
 
@@ -171,7 +171,7 @@ Compiled and run against the FTB maven releases:
 - Quest files that have not been cached locally may not be available offline;
   multiplayer progress is not guaranteed.
 - Editing multiplayer quests from the menu is not supported — use the in-world book.
-- The prototype does not reuse the entire native UI for every flow, so some
+- This mod does not reuse the entire native UI for every flow, so some
   interactions differ from the in-world book.
 - Team names and members are resolved from local save data; players who were never
   seen locally may appear as a short UUID.
