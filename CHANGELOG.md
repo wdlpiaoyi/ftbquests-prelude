@@ -17,8 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Notes
 
 - The fluid picker has no icons outside a world: FTB Library resolves a fluid's sprite from the block
-  atlas, which the client only has after joining a world. Unmodified FTB Quests behaves the same way,
-  so this is left alone (see the README).
+  atlas, which the client only has after joining a world. Unmodified FTB Quests behaves the same way
+  on this machine, so this is left alone (see the README).
 
 ## [1.0.8] - 2026-09-26
 
@@ -44,17 +44,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Not fixed (by choice)
 
 - The dimension task icon and the reward-table screen's close "x". Both behave the same in unmodified
-  FTB Quests.
+  FTB Quests on this machine.
 
 ## [1.0.7] - 2026-09-26
 
 ### Fixed
 
-- **Texture-based icons now draw in the local quest book** - dimension task (nether portal), fluid
-  task, the fluid picker and the FTB Quests theme icons. `ImageIcon` is redirected to the vanilla
-  `GuiGraphics.blit` path while the local book is open, the same fix applied to this mod's own icons in
-  1.0.3. Tiled backgrounds and UV-sliced sprite sheets keep FTB Library's own drawing, and nothing
-  changes inside a world.
+- **Texture icons in FTB Library's list screens now draw** (this mod's save/team pickers, plus FTB
+  Library's item selector). `ImageIcon` is redirected to the vanilla `GuiGraphics.blit` path while the
+  local book is open, the same fix applied to this mod's own icons in 1.0.3. Tiled backgrounds and
+  UV-sliced sprite sheets keep FTB Library's own drawing, and nothing changes inside a world. (1.0.8
+  narrowed this to those screens; FTB Quests' own quest screen was drawing its icons already.)
 - **The item picker is no longer empty at the main menu.** FTB Library's "all items" mode lists
   creative tab contents, which are only populated after a world load; with the local book open outside
   a world the selector now reads the item registry instead. This also fixes the "all items" count
@@ -69,7 +69,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Notes
 
 - The reward-table screen's close "x" and the fluid picker's icons are missing in unmodified FTB
-  Quests too; the `ImageIcon` fix above covers them in the local book.
+  Quests on this machine too. Neither is covered by the `ImageIcon` change above (the fluid picker's
+  icon never reaches it - see 1.1.0) and neither is worked around.
 
 ## [1.0.6] - 2026-09-26
 
@@ -98,8 +99,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Notes
 
 - `T` / `S` / `D` (edit quest title / subtitle / description) do not work in the local book even with
-  editor mode on. They do not work in unmodified FTB Quests either, so the cause is unknown - it is
-  not specific to this mod.
+  editor mode on. They do not work in unmodified FTB Quests on this machine either, so the cause is
+  unknown - it is not specific to this mod.
 
 ## [1.0.4] - 2026-09-26
 
@@ -108,7 +109,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`editorModeDefault` did nothing.** The option was declared but never read, so the local quest book
   always opened with editor mode off. That made FTB Quests hide its editing UI, exactly as it does for
   a player without edit rights: the key reference showed only the general controls, and the `T` / `S` /
-  `D` quest text shortcuts were inert. The option is now wired up, and defaults to **on**.
+  `D` quest text shortcuts were inert. The option is now wired up. (1.0.5 changed the default back to
+  off, so a fresh install spoils nothing for players.)
 - The local quest data log line now also reports whether editor mode is on.
 
 ### Notes
@@ -121,11 +123,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - **Icons were still invisible in the progress picker (and the book's progress button).** FTB Library
-  draws icons through {@code GuiHelper.drawTexturedRect}, which drives {@code RenderSystem} and
-  {@code Tesselator} by hand; render-optimisation mods that take over the vertex pipeline (Accelerated
-  Rendering, Florescent, Chloride, ImmediatelyFast, ...) can make that silently draw nothing.
-  `PreludeIcons` now uses `BlitIcon`, which draws through the vanilla {@code GuiGraphics.blit} path -
-  the same path this mod's menu button already used successfully in those packs.
+  draws icons through `GuiHelper.drawTexturedRect`, and that did not render them here. `PreludeIcons`
+  now uses `BlitIcon`, which draws through the vanilla `GuiGraphics.blit` path - the same path this
+  mod's menu button already used successfully in the same pack.
 
 ## [1.0.2] - 2026-09-26
 

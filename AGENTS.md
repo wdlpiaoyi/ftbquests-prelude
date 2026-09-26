@@ -72,11 +72,12 @@ messages. Dev runtime is under `run/` (git-ignored):
   screen, or <kbd>Esc</kbd> needs several presses.
 - `LevelLoadingScreen.render` does not call `super.render`, so its widgets are clickable but never
   drawn; `PreludeClientEvents` draws our button manually in `ScreenEvent.Render.Post`.
-- Prefer FTB-themed icons (`PreludeIcons`: FTBQ theme `save_icon`, FTB Teams `teams.png`) over custom
-  art, so resource packs and FTB Quests themes apply. These are drawn via `BlitIcon`
-  (vanilla `GuiGraphics.blit`) **on purpose**: FTB Library's own `GuiHelper.drawTexturedRect` drives
-  `RenderSystem`/`Tesselator` by hand and silently draws nothing in packs with vertex-pipeline mods
-  (Accelerated Rendering, Florescent, Chloride, ImmediatelyFast), which is a reported bug.
+- Prefer FTB-themed icons (`PreludeIcons`) over custom art, so resource packs and FTB Quests themes
+  apply. They are drawn via `BlitIcon` (vanilla `GuiGraphics.blit`) **on purpose**: FTB Library's own
+  `GuiHelper.drawTexturedRect` did not render them in the test pack. That only works for icons with a
+  white colour (`blit` cannot tint), so `ImageIconMixin` also restricts itself to FTB Library's
+  `AbstractThreePanelScreen` screens and skips tiled/UV-sliced/tinted icons. FTB Quests' own quest
+  screen must stay excluded: redirecting it loses the tint and turns the shape textures white.
 
 ## Repo-specific files
 

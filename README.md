@@ -179,7 +179,10 @@ Compiled and run against the FTB maven releases:
   has none at all; vanilla biomes are listed regardless.
 - **The fluid picker has no icons at the main menu.** FTB Library resolves a fluid's sprite
   from the block atlas, which the client only has after joining a world; unmodified FTB
-  Quests behaves the same way, so this is not worked around.
+  Quests behaves the same way on this machine, so this is not worked around.
+- **`T` / `S` / `D`** (edit quest title / subtitle / description) and the dimension task icon do not
+  work in the local book. Unmodified FTB Quests behaves the same way on this machine, so the cause is
+  unknown and they are not worked around.
 
 ## Changelog
 
