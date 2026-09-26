@@ -79,6 +79,7 @@
 | `editorModeDefault` | `false` | — | 直接以编辑模式打开本地任务书。 |
 | `showEntryButtons` | `true` | — | 在菜单界面显示右上角书本按钮（唯一入口）。 |
 | `showSaveProgressButton` | `true` | — | 在任务书内显示保存图标进度按钮。 |
+| `hiddenButtonPackages` | `["com.huanghuang.rsintegration."]` | — | 要在本地任务书里隐藏的第三方按钮的 Java 包名前缀。 |
 
 ## 数据与备份
 

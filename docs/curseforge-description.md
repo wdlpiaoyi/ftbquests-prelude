@@ -55,6 +55,7 @@ The config file is `<config>/ftbq_prelude/ftbquests_prelude-common.toml`.
 | `editorModeDefault` | `false` | — | Open the local book in editor mode. |
 | `showEntryButtons` | `true` | — | Show the menu-screen buttons (the only entry point). |
 | `showSaveProgressButton` | `true` | — | Show the progress button inside the book. |
+| `hiddenButtonPackages` | `["com.huanghuang.rsintegration."]` | — | Java package prefixes of third-party quest book buttons to hide while the local book is open. |
 
 ## Compatibility
 

@@ -3,6 +3,8 @@ package dev.wdlpiaoyi.ftbquestsprelude.config;
 import net.minecraftforge.common.ForgeConfigSpec;
 import org.apache.commons.lang3.tuple.Pair;
 
+import java.util.List;
+
 /**
  * Configuration for FTB Quests: Prelude.
  *
@@ -62,6 +64,15 @@ public final class PreludeConfig {
          */
         public final ForgeConfigSpec.BooleanValue showSaveProgressButton;
 
+        /**
+         * Java package prefixes of third-party quest book buttons to hide while the local book is open.
+         *
+         * <p>Matching is by class name prefix, so a trailing dot hides a whole package. Those buttons
+         * normally drive server-side work (submitting tasks, scanning storage) that cannot do anything
+         * outside a world.
+         */
+        public final ForgeConfigSpec.ConfigValue<List<? extends String>> hiddenButtonPackages;
+
         Common(ForgeConfigSpec.Builder builder) {
             builder.comment("FTB Quests: Prelude settings",
                     "This mod is client-side only; these values only affect the local client.").push("general");
@@ -97,6 +108,16 @@ public final class PreludeConfig {
             showSaveProgressButton = builder
                     .comment("Show the 'local quest progress' save-icon button inside the native quest book.")
                     .define("showSaveProgressButton", true);
+
+            hiddenButtonPackages = builder
+                    .comment("Java package prefixes of third-party quest book buttons to hide while the",
+                            "local book is open. Such buttons usually drive server-side work that cannot",
+                            "do anything outside a world. Matching is by class name prefix, so include a",
+                            "trailing dot to hide a whole package (e.g. 'com.example.mymod.').",
+                            "Defaults to rs_integration's 'confirm checkmarks' and 'scan storage' buttons.")
+                    .defineListAllowEmpty("hiddenButtonPackages",
+                            List.of("com.huanghuang.rsintegration."),
+                            o -> o instanceof String);
 
             builder.pop();
         }
