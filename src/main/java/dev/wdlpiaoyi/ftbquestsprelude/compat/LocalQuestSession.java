@@ -305,15 +305,18 @@ public final class LocalQuestSession {
     }
 
     private static void reload(Path dir, long diskFingerprint) {
-        boolean wasEditing = active != null && active.editing;
+        LocalQuestSession previous = active;
         disposeActive();
 
         LocalQuestSession session = new LocalQuestSession(load(dir), dir);
-        session.editing = wasEditing;
+        // Preserve the flag when reloading an existing session; a fresh session starts in the
+        // configured editor mode (editorModeDefault).
+        session.editing = previous != null ? previous.editing : PreludeConfig.COMMON.editorModeDefault.get();
         session.fingerprint = diskFingerprint;
         session.defaultTeamData = session.file.selfTeamData;
         active = session;
-        FTBQuestsPrelude.LOGGER.info("[Prelude] Loaded local quest data from {}", dir);
+        FTBQuestsPrelude.LOGGER.info("[Prelude] Loaded local quest data from {} (editor mode: {})",
+                dir, session.editing ? "on" : "off");
     }
 
     private static void disposeActive() {

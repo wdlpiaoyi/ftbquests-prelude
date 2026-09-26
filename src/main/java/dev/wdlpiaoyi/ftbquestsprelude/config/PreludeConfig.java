@@ -46,7 +46,7 @@ public final class PreludeConfig {
 
         /**
          * Open the local quest book directly in editor mode, so quests are unlocked/visible even
-         * before any progress data exists.
+         * before any progress data exists. Defaults to on: the local book is an authoring tool.
          */
         public final ForgeConfigSpec.BooleanValue editorModeDefault;
 
@@ -82,8 +82,11 @@ public final class PreludeConfig {
                     .defineInRange("autoSaveDebounceSeconds", 5, 1, 300);
 
             editorModeDefault = builder
-                    .comment("Open the local quest book directly in editor mode.")
-                    .define("editorModeDefault", false);
+                    .comment("Open the local quest book in editor mode.",
+                            "On by default: while editor mode is off, FTB Quests hides its editing UI",
+                            "(the editor section of the key reference, the T/S/D quest text shortcuts,",
+                            "drag-to-move, ...), exactly as it does for a player without edit rights.")
+                    .define("editorModeDefault", true);
 
             showEntryButtons = builder
                     .comment("Show the top-right 'local quest book' button on the title, world selection,",

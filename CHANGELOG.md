@@ -4,6 +4,21 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.4] - 2026-09-26
+
+### Fixed
+
+- **`editorModeDefault` did nothing.** The option was declared but never read, so the local quest book
+  always opened with editor mode off. That made FTB Quests hide its editing UI, exactly as it does for
+  a player without edit rights: the key reference showed only the general controls, and the `T` / `S` /
+  `D` quest text shortcuts were inert. The option is now wired up, and defaults to **on**.
+- The local quest data log line now also reports whether editor mode is on.
+
+### Notes
+
+- An existing `ftbq_prelude/ftbquests_prelude-common.toml` keeps its previous `editorModeDefault`
+  value, so set it to `true` (or delete the file) if you had it on `false`.
+
 ## [1.0.3] - 2026-09-26
 
 ### Fixed
