@@ -88,8 +88,9 @@ messages. Dev runtime is under `run/` (git-ignored):
   `java tools/GenLogo.java <out.png> [size] [dipTop] [dipBot]`.
   `src/main/resources/logo.png` is 128 (mod list); `docs/curseforge-avatar.png` is 400, because
   CurseForge requires avatars to be exactly 400x400.
-- `docs/curseforge-*.md|txt|png` — CurseForge listing assets: the description (English first, then
-  Simplified Chinese — CurseForge requires English before other languages), the one-line summary and
+- `docs/curseforge-*.md|txt|png` — CurseForge listing assets: the description (English only - CurseForge
+  is an English platform and its multi-language support is optional; the project's Source/Issues link
+  fields cover the GitHub links, so the description carries no link section), the one-line summary and
   the 400x400 avatar.
 
 ## Metadata & publishing
