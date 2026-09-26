@@ -177,6 +177,9 @@ Compiled and run against the FTB maven releases:
 - **Modded biomes only appear in the biome picker after a world has been joined in the
   session.** Biomes are a server-synced dynamic registry, so at the main menu the client
   has none at all; vanilla biomes are listed regardless.
+- **The fluid picker has no icons at the main menu.** FTB Library resolves a fluid's sprite
+  from the block atlas, which the client only has after joining a world; unmodified FTB
+  Quests behaves the same way, so this is not worked around.
 
 ## Changelog
 

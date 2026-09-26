@@ -4,29 +4,21 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.10] - 2026-09-26
-
-### Fixed
-
-- **Fluid entries have an icon outside a world.** FTB Library builds a fluid's icon from
-  `ClientUtils.getStillTexture(stack)`, which resolves the fluid's sprite from the block atlas and
-  returns `null` outside a world. `Icon.getIcon(null)` is an empty `Color4I`, not an `ImageIcon`, so
-  the fluid picker drew nothing - and the `ImageIcon` fix could never see it, which is why 1.0.9 did
-  not help. When the normal icon comes back empty, the fluid's bucket item is used instead (drawn by
-  the vanilla item renderer, which works anywhere).
-
-## [1.0.9] - 2026-09-26
+## [1.1.0] - 2026-09-26
 
 ### Fixed
 
 - **The item picker lists items at the main menu now.** Hiding the search-mode button was not enough:
   the default mode is a recipe viewer's index, which is only populated in a world, so the list stayed
-  empty. The registry-backed mode is now used whenever the local book is open outside a world,
-  whatever mode would otherwise be active.
-- **Fluid picker icons are drawn again.** FTB Library builds a fluid's icon as
-  `Icon.getIcon(stillTexture).withTint(getFluidColor(stack))`; outside a world the colour cannot be
-  resolved and comes back fully transparent, so the icon was tinted into nothing. A fully transparent
-  tint is now ignored and the texture is drawn untinted.
+  empty. A registry-backed mode is now used whenever the local book is open outside a world, whatever
+  mode would otherwise be active.
+- A fully transparent icon tint is no longer applied, since it blanked the icon entirely.
+
+### Notes
+
+- The fluid picker has no icons outside a world: FTB Library resolves a fluid's sprite from the block
+  atlas, which the client only has after joining a world. Unmodified FTB Quests behaves the same way,
+  so this is left alone (see the README).
 
 ## [1.0.8] - 2026-09-26
 

@@ -71,6 +71,9 @@ The config file is `<config>/ftbq_prelude/ftbquests_prelude-common.toml`.
 - Not every flow reuses the full native UI, so some interactions differ from the in-world book.
 - Team names and members are read from local save data; players never seen on this machine can show
   as a short UUID.
+- Outside a world a few pickers cannot match the in-world book: modded biomes only appear after a
+  world has been joined in the session, and the fluid picker shows no fluid icons. Both behave the
+  same way in unmodified FTB Quests.
 
 ## Credits and license
 
@@ -89,7 +92,7 @@ Minecraft 1.20.1 (Forge) 的客户端模组：**不进入世界也能打开 FTB 
 - **存档进度**：任务书右下角的保存图标按钮可切换存档与队伍；队伍行显示成员数，悬停看成员名，右键展开成员列表。
 - **配置**：`<config>/ftbq_prelude/ftbquests_prelude-common.toml`（备份数量、自动保存、编辑模式默认、入口开关等）。
 - **需要**：FTB Quests 及其依赖（FTB Library、FTB Teams、Architectury API）；仅需客户端安装。
-- **注意**：不替代服务端同步，多人数据与进度仍以服务端为准。许可：MIT。
+- **注意**：不替代服务端同步，多人数据与进度仍以服务端为准；世界外有个别限制（模组群系需进过一次世界、流体选择器无图标），原版 FTBQ 表现一致。许可：MIT。
 
 ---
 
