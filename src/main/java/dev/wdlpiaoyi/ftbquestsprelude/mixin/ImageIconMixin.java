@@ -74,12 +74,17 @@ public abstract class ImageIconMixin {
         pose.scale(w / 16.0f, h / 16.0f, 1.0f);
 
         Color4I color = self.color;
-        if (color != null && !color.isEmpty()) {
-            // blit cannot tint through GuiGraphics, so apply the colour to the shader directly.
+        // A fully transparent tint means "no colour information" (e.g. a fluid whose tint cannot be
+        // resolved outside a world). Applying it would draw nothing at all, so it is ignored and the
+        // texture is drawn untinted instead.
+        boolean tinted = color != null && color.alphai() > 0;
+        if (tinted) {
             RenderSystem.setShaderColor(color.redf(), color.greenf(), color.bluef(), color.alphaf());
         }
         graphics.blit(self.texture, 0, 0, 0, 0, 16, 16, 16, 16);
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+        if (tinted) {
+            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+        }
 
         pose.popPose();
         ci.cancel();

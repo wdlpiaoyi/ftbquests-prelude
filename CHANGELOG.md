@@ -4,6 +4,19 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.9] - 2026-09-26
+
+### Fixed
+
+- **The item picker lists items at the main menu now.** Hiding the search-mode button was not enough:
+  the default mode is a recipe viewer's index, which is only populated in a world, so the list stayed
+  empty. The registry-backed mode is now used whenever the local book is open outside a world,
+  whatever mode would otherwise be active.
+- **Fluid picker icons are drawn again.** FTB Library builds a fluid's icon as
+  `Icon.getIcon(stillTexture).withTint(getFluidColor(stack))`; outside a world the colour cannot be
+  resolved and comes back fully transparent, so the icon was tinted into nothing. A fully transparent
+  tint is now ignored and the texture is drawn untinted.
+
 ## [1.0.8] - 2026-09-26
 
 ### Fixed

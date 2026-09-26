@@ -35,10 +35,12 @@ public abstract class ResourceSelectorScreenMixin {
         }
 
         Optional<ResourceSearchMode> mode = cir.getReturnValue();
-        if (mode.isEmpty() || mode.get() != ResourceSearchMode.ALL_ITEMS) {
+        if (mode.isEmpty()) {
             return;
         }
 
+        // Whatever mode would be active - FTB Library's creative-tab list, or a recipe viewer's index
+        // which is only populated in a world - the item registry works at the main menu.
         cir.setReturnValue(Optional.of(RegistryItemSearchMode.INSTANCE));
     }
 }

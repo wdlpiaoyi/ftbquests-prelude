@@ -22,7 +22,6 @@ import java.util.List;
 public final class RegistryItemSearchMode implements ResourceSearchMode<ItemStack> {
 
     public static final RegistryItemSearchMode INSTANCE = new RegistryItemSearchMode();
-
     private List<SelectableResource<ItemStack>> cached;
 
     private RegistryItemSearchMode() {
