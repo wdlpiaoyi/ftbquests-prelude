@@ -17,7 +17,7 @@ public abstract class ToggleEditModeButtonMixin {
 
     @Inject(method = "makeTooltip", remap = false, at = @At("HEAD"), cancellable = true)
     private static void prelude$tooltip(CallbackInfoReturnable<Component> cir) {
-        if (LocalQuestSession.isActive()) {
+        if (LocalQuestSession.isLocalBook()) {
             cir.setReturnValue(Component.translatable(LocalQuestSession.isEditing()
                     ? "ftbquests_prelude.editing_mode.on"
                     : "ftbquests_prelude.editing_mode.off"));

@@ -1,6 +1,7 @@
 package dev.wdlpiaoyi.ftbquestsprelude.client;
 
 import dev.ftb.mods.ftblibrary.icon.Icon;
+import dev.wdlpiaoyi.ftbquestsprelude.FTBQuestsPrelude;
 
 /**
  * Icons shared by the local quest book screens.
@@ -20,6 +21,12 @@ public final class PreludeIcons {
 
     /** FTB Teams' "my team" icon, as used by its own sidebar button. */
     public static final Icon TEAM = Icon.getIcon("ftbteams:textures/teams.png");
+
+    static {
+        // Logged once, because an empty icon renders as nothing at all and is otherwise invisible.
+        FTBQuestsPrelude.LOGGER.info("[Prelude] Icons resolved: save={}, team={}",
+                SAVE.isEmpty() ? "EMPTY" : "ok", TEAM.isEmpty() ? "EMPTY" : "ok");
+    }
 
     private PreludeIcons() {
     }

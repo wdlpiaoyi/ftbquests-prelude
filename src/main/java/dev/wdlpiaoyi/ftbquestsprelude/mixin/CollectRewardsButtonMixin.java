@@ -1,7 +1,7 @@
 package dev.wdlpiaoyi.ftbquestsprelude.mixin;
 
 import dev.ftb.mods.ftbquests.client.gui.quests.CollectRewardsButton;
-import net.minecraft.Util;
+import dev.wdlpiaoyi.ftbquestsprelude.compat.LocalQuestSession;
 import net.minecraft.client.player.LocalPlayer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -19,13 +19,13 @@ public abstract class CollectRewardsButtonMixin {
             at = @At(value = "INVOKE", remap = true,
                     target = "Lnet/minecraft/client/player/LocalPlayer;getUUID()Ljava/util/UUID;"))
     private UUID prelude$draw(LocalPlayer player) {
-        return player == null ? Util.NIL_UUID : player.getUUID();
+        return player == null ? LocalQuestSession.viewPlayerUuid() : player.getUUID();
     }
 
     @Redirect(method = "onClicked", remap = false,
             at = @At(value = "INVOKE", remap = true,
                     target = "Lnet/minecraft/client/player/LocalPlayer;getUUID()Ljava/util/UUID;"))
     private UUID prelude$clicked(LocalPlayer player) {
-        return player == null ? Util.NIL_UUID : player.getUUID();
+        return player == null ? LocalQuestSession.viewPlayerUuid() : player.getUUID();
     }
 }

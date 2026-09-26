@@ -11,6 +11,8 @@ import dev.wdlpiaoyi.ftbquestsprelude.FTBQuestsPrelude;
 import dev.wdlpiaoyi.ftbquestsprelude.backup.BackupManager;
 import dev.wdlpiaoyi.ftbquestsprelude.config.PreludeConfig;
 import net.minecraft.Util;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.User;
 import net.minecraftforge.fml.loading.FMLPaths;
 import org.jetbrains.annotations.Nullable;
 
@@ -43,6 +45,10 @@ public final class LocalQuestSession {
     @Nullable
     private static LocalQuestSession active;
 
+    /** Cached UUID used for per-player lookups while no world is loaded. */
+    @Nullable
+    private static UUID viewPlayerUuid;
+
     /** Save whose progress is currently shown, or null for the plain local book. */
     @Nullable
     private static Path currentSaveRoot;
@@ -72,6 +78,45 @@ public final class LocalQuestSession {
 
     public static boolean isActive() {
         return active != null;
+    }
+
+    /**
+     * True only while the quest book on screen is our <b>local</b> one.
+     *
+     * <p>Every FTB Quests UI change this mod makes must be guarded by this, not by
+     * {@link #isActive()}: once a world is joined, {@code ClientQuestFile.INSTANCE} is replaced by the
+     * server-synced file, so the local session no longer owns what is displayed and the native GUI
+     * must behave exactly as it always does.
+     */
+    public static boolean isLocalBook() {
+        return active != null && active.file == ClientQuestFile.INSTANCE;
+    }
+
+    /**
+     * The player UUID to use for per-player lookups (pinned quests, claimed rewards) while no world is
+     * loaded.
+     *
+     * <p>Outside a world {@code Minecraft.player} is null, so the native GUI would look everything up
+     * under {@code Util.NIL_UUID} and never find the save's real data. A single-player save is keyed
+     * by the local account's UUID, which is available even without a world.
+     */
+    public static UUID viewPlayerUuid() {
+        UUID cached = viewPlayerUuid;
+        if (cached != null) {
+            return cached;
+        }
+        UUID id = null;
+        try {
+            User user = Minecraft.getInstance().getUser();
+            if (user != null) {
+                id = user.getProfileId();
+            }
+        } catch (Throwable ignored) {
+            // fall through to NIL
+        }
+        cached = id == null ? Util.NIL_UUID : id;
+        viewPlayerUuid = cached;
+        return cached;
     }
 
     /** The save whose progress is currently shown, or null for the plain local book. */

@@ -16,6 +16,7 @@ import net.minecraft.client.gui.screens.worldselection.SelectWorldScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -102,6 +103,19 @@ public final class PreludeClientEvents {
             }
         } catch (Throwable t) {
             FTBQuestsPrelude.LOGGER.error("[Prelude] Failed to render the local quest book button", t);
+        }
+    }
+
+    /**
+     * Drops the local session when a world is joined. From that point the native quest book is the
+     * server-synced one, and every change this mod makes to the FTB Quests UI must stop applying.
+     */
+    @SubscribeEvent
+    public static void onLoggingIn(ClientPlayerNetworkEvent.LoggingIn event) {
+        try {
+            LocalQuestSession.invalidate();
+        } catch (Throwable t) {
+            FTBQuestsPrelude.LOGGER.error("[Prelude] Failed to close the local quest book on login", t);
         }
     }
 

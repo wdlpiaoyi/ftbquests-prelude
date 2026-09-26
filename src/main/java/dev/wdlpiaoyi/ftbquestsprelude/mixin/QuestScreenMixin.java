@@ -1,7 +1,7 @@
 package dev.wdlpiaoyi.ftbquestsprelude.mixin;
 
 import dev.ftb.mods.ftbquests.client.gui.quests.QuestScreen;
-import net.minecraft.Util;
+import dev.wdlpiaoyi.ftbquestsprelude.compat.LocalQuestSession;
 import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -19,6 +19,6 @@ public abstract class QuestScreenMixin {
             at = @At(value = "INVOKE", remap = true,
                     target = "Lnet/minecraft/world/entity/player/Player;getUUID()Ljava/util/UUID;"))
     private UUID prelude$tooltip(Player player) {
-        return player == null ? Util.NIL_UUID : player.getUUID();
+        return player == null ? LocalQuestSession.viewPlayerUuid() : player.getUUID();
     }
 }

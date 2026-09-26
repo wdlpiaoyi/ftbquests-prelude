@@ -24,6 +24,7 @@
     "MoveChapterMessageAccessor",
     "MoveMovableMessageAccessor",
     "OtherButtonsPanelBottomMixin",
+    "OtherButtonsPanelTopMixin",
     "QuestButtonMixin",
     "QuestScreenMixin",
     "ReorderItemMessageAccessor",

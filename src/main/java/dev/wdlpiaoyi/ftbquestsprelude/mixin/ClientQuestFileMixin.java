@@ -36,7 +36,7 @@ public abstract class ClientQuestFileMixin {
 
     @Inject(method = "canClientPlayerEdit", remap = false, at = @At("HEAD"), cancellable = true)
     private static void prelude$canClientPlayerEdit(CallbackInfoReturnable<Boolean> cir) {
-        if (LocalQuestSession.isActive()) {
+        if (LocalQuestSession.isLocalBook()) {
             cir.setReturnValue(LocalQuestSession.isEditing());
         }
     }

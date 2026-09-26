@@ -60,6 +60,13 @@ messages. Dev runtime is under `run/` (git-ignored):
 
 - `ClientQuestFile.INSTANCE` is public static, but its `invalid` field is protected — check
   `ClientQuestFile.exists()` instead.
+- **Every FTBQ UI change must be guarded by `LocalQuestSession.isLocalBook()`, never `isActive()`**,
+  so the in-world book stays vanilla. `isActive()` is still true after joining a world (the session is
+  only dropped by the `ClientPlayerNetworkEvent.LoggingIn` handler); `isLocalBook()` compares the
+  session's file against `ClientQuestFile.INSTANCE`, which the server sync replaces.
+- Outside a world `Minecraft.player` is null. Per-player FTBQ lookups (claimed rewards, pins) must use
+  `LocalQuestSession.viewPlayerUuid()` (the local account UUID) rather than `Util.NIL_UUID`, or the
+  save's real data is never found.
 - Open a **fresh `QuestScreen` per open** (that is what makes `prevScreen` / <kbd>Esc</kbd> behave).
   Switching a team must update the open screen in place + `refreshWidgets()` — never stack another
   screen, or <kbd>Esc</kbd> needs several presses.

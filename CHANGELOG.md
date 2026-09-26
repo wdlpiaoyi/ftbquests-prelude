@@ -4,6 +4,20 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.2] - 2026-09-26
+
+### Fixed
+
+- **The in-world quest book is no longer modified.** Every FTB Quests UI change is now guarded by
+  "the book on screen is the local one" (`LocalQuestSession.isLocalBook()`), and the local session is
+  dropped when a world is joined. Previously the edit-mode button stayed modified in-world and the
+  save-progress button also appeared there.
+- **Claimed rewards were not recognised.** Outside a world `Minecraft.player` is null, so per-player
+  lookups (claimed rewards, pinned quests) fell back to `Util.NIL_UUID` and never matched the save's
+  data, which is keyed by the real player UUID. They now resolve to the local account's UUID.
+- **"Collect rewards" and the auto-pin toggle** are hidden while the local book is open; both need a
+  server to act on, and the first one otherwise just opened a dead screen.
+
 ## [1.0.1] - 2026-09-26
 
 ### Fixed
