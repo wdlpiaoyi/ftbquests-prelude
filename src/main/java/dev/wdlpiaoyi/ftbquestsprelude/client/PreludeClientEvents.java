@@ -57,6 +57,17 @@ public final class PreludeClientEvents {
             LocalEditBridge.setSaveNotifier(Notifications::saved);
 
             Screen screen = event.getScreen();
+
+            // Keep third-party compatibility workarounds applied only while the local book is on
+            // screen. Done from screen events so it does not rely on the client tick running.
+            if (LocalQuestSession.isLocalQuestScreenOpen()) {
+                if (UnsafeMods.isPresent()) {
+                    UnsafeMods.ensureSafe();
+                }
+            } else {
+                UnsafeMods.release();
+            }
+
             if (!isSupportedScreen(screen)) {
                 return;
             }

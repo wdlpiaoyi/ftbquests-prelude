@@ -98,6 +98,16 @@ public final class LocalQuestSession {
     }
 
     /**
+     * True while the local quest book is the screen being displayed.
+     *
+     * <p>Used to keep third-party compatibility workarounds applied exactly as long as the book is on
+     * screen. This is checked from screen events, so it does not depend on the client tick firing.
+     */
+    public static boolean isLocalQuestScreenOpen() {
+        return isLocalBook() && ClientUtils.getCurrentGuiAs(QuestScreen.class) != null;
+    }
+
+    /**
      * The player UUID to use for per-player lookups (pinned quests, claimed rewards) while no world is
      * loaded.
      *
@@ -177,7 +187,8 @@ public final class LocalQuestSession {
     public static void tick() {
         tickCounter++;
 
-        // Only keep the third-party workaround applied while the local book is actually on screen.
+        // Secondary safety net: the primary release happens on screen changes (PreludeClientEvents),
+        // so this does not depend on the client tick firing.
         if (ClientUtils.getCurrentGuiAs(QuestScreen.class) == null) {
             UnsafeMods.release();
         }
