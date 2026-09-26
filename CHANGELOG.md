@@ -16,8 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Notes
 
 - `T` / `S` / `D` (edit quest title / subtitle / description) do not work in the local book even with
-  editor mode on. They do not work in unmodified FTB Quests either, so this is an upstream bug rather
-  than something this mod introduces.
+  editor mode on. They do not work in unmodified FTB Quests either, so the cause is unknown - it is
+  not specific to this mod.
 
 ## [1.0.4] - 2026-09-26
 
