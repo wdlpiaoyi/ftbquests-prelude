@@ -45,14 +45,14 @@ public final class PreludeConfig {
         public final ForgeConfigSpec.IntValue autoSaveDebounceSeconds;
 
         /**
-         * Open the local quest book directly in editor mode, so quests are unlocked/visible even
-         * before any progress data exists. Defaults to on: the local book is an authoring tool.
+         * Open the local quest book directly in editor mode. Off by default, so a fresh install
+         * spoils nothing; modpack authors will want to turn it on.
          */
         public final ForgeConfigSpec.BooleanValue editorModeDefault;
 
         /**
          * Show the top-right "local quest book" button on the title, world selection, world
-         * creation and world loading screens. The key binding still works when this is disabled.
+         * creation and world loading screens. This is the only entry point.
          */
         public final ForgeConfigSpec.BooleanValue showEntryButtons;
 
@@ -83,14 +83,15 @@ public final class PreludeConfig {
 
             editorModeDefault = builder
                     .comment("Open the local quest book in editor mode.",
-                            "On by default: while editor mode is off, FTB Quests hides its editing UI",
-                            "(the editor section of the key reference, the T/S/D quest text shortcuts,",
-                            "drag-to-move, ...), exactly as it does for a player without edit rights.")
-                    .define("editorModeDefault", true);
+                            "Off by default so nothing is spoiled; turn it on for authoring.",
+                            "While editor mode is off, FTB Quests hides its editing UI (the editor",
+                            "section of the key reference, drag-to-move, ...), exactly as it does for",
+                            "a player without edit rights.")
+                    .define("editorModeDefault", false);
 
             showEntryButtons = builder
                     .comment("Show the top-right 'local quest book' button on the title, world selection,",
-                            "world creation and world loading screens. The key binding still works when disabled.")
+                            "world creation and world loading screens. This is the only entry point.")
                     .define("showEntryButtons", true);
 
             showSaveProgressButton = builder

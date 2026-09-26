@@ -43,7 +43,7 @@ messages. Dev runtime is under `run/` (git-ignored):
     `getCurrentSaveRoot`.
   - `LocalEditBridge` — maps intercepted FTBQ C2S edit messages to client-side appliers when not
     connected. `SaveProgress` — reads `<save>/ftbquests` + `<save>/ftbteams` data.
-- `client/` — screens, buttons, key binding, entry events. `PreludeIcons` centralises icon sources.
+- `client/` — screens, buttons, entry events. `PreludeIcons` centralises icon sources.
 - `mixin/` — injections into FTB Quests and vanilla.
 
 ## Mixin rules (learned the hard way)

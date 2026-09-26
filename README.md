@@ -51,10 +51,8 @@ save's quest progress from the same book.
 
 ### Opening the local quest book
 
-- Click the **book button** in the top-right corner of the title, world selection,
-  world creation or world loading screen.
-- Or press the key binding (unbound by default — set it in
-  **Options → Controls → Key Binds → FTB Quests: Prelude**).
+Click the **book button** in the top-right corner of the title, world selection, world
+creation or world loading screen.
 
 When a world is highlighted on the select-world screen, or a world is loading, the
 button opens that **save's progress** instead of the plain local book.
@@ -89,7 +87,7 @@ It is a client-side mod, so these values only affect your client.
 | `autoSaveOnClose` | `true` | — | Write pending local edits when the local quest screen closes. |
 | `autoSaveDebounceSeconds` | `5` | `1`–`300` | Seconds of inactivity before pending edits are written to disk. |
 | `editorModeDefault` | `false` | — | Open the local quest book directly in editor mode. |
-| `showEntryButtons` | `true` | — | Show the top-right book button on the menu screens (the key binding still works). |
+| `showEntryButtons` | `true` | — | Show the top-right book button on the menu screens (the only entry point). |
 | `showSaveProgressButton` | `true` | — | Show the save-icon progress button inside the quest book. |
 
 ## Data and backups

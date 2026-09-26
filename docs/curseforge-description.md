@@ -17,9 +17,6 @@ where it is normally unreachable:
 | World creation | The local book |
 | World loading | The world being loaded, if it has saved progress |
 
-A key binding (unbound by default, under **Options → Controls → Key Binds**) does the same as the
-button.
-
 ## Local editing
 
 Editor mode makes every quest visible and editable: quests, chapters, tasks, rewards and reward
@@ -53,7 +50,7 @@ The config file is `<config>/ftbq_prelude/ftbquests_prelude-common.toml`.
 | `autoSaveOnClose` | `true` | — | Save pending edits when the screen closes. |
 | `autoSaveDebounceSeconds` | `5` | 1–300 | Seconds of inactivity before pending edits are saved. |
 | `editorModeDefault` | `false` | — | Open the local book in editor mode. |
-| `showEntryButtons` | `true` | — | Show the menu-screen buttons (the key binding still works). |
+| `showEntryButtons` | `true` | — | Show the menu-screen buttons (the only entry point). |
 | `showSaveProgressButton` | `true` | — | Show the progress button inside the book. |
 
 ## Compatibility

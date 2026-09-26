@@ -26,9 +26,8 @@ import java.nio.file.Path;
 import java.util.List;
 
 /**
- * Client entry points for the local quest book: a small floppy-disk button in the top-right corner
- * of the title screen, the world selection/creation screens and the world loading screen, plus a
- * key binding.
+ * Client entry points for the local quest book: a small book button in the top-right corner of the
+ * title screen, the world selection/creation screens and the world loading screen.
  *
  * <p>On the select-world screen (with a highlighted save) and the level loading screen, the button
  * opens the quest progress of that save by default; the plain local book is used elsewhere. Browsing
@@ -126,10 +125,6 @@ public final class PreludeClientEvents {
         }
         try {
             LocalQuestSession.tick();
-
-            while (PreludeKeyMappings.OPEN_LOCAL_BOOK.consumeClick()) {
-                tryOpen();
-            }
         } catch (Throwable t) {
             FTBQuestsPrelude.LOGGER.error("[Prelude] Client tick handling failed", t);
         }

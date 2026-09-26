@@ -4,6 +4,21 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.5] - 2026-09-26
+
+### Changed
+
+- **Removed the key binding.** It also worked from inside a world, where this mod has no business
+  opening anything. The menu button is the intended (and now only) entry point.
+- **`editorModeDefault` is off by default again**, so a fresh install spoils nothing for players. The
+  option stays wired up and now actually works (see 1.0.4).
+
+### Notes
+
+- `T` / `S` / `D` (edit quest title / subtitle / description) do not work in the local book even with
+  editor mode on. They do not work in unmodified FTB Quests either, so this is an upstream bug rather
+  than something this mod introduces.
+
 ## [1.0.4] - 2026-09-26
 
 ### Fixed
