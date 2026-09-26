@@ -89,6 +89,7 @@ It is a client-side mod, so these values only affect your client.
 | `editorModeDefault` | `false` | — | Open the local quest book directly in editor mode. |
 | `showEntryButtons` | `true` | — | Show the top-right book button on the menu screens (the only entry point). |
 | `showSaveProgressButton` | `true` | — | Show the save-icon progress button inside the quest book. |
+| `hiddenButtonPackages` | `["com.huanghuang.rsintegration."]` | — | Java package prefixes of third-party quest book buttons to hide in the local book. |
 
 ## Data and backups
 
