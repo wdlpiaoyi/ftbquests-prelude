@@ -4,6 +4,19 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.2] - 2026-09-27
+
+### Fixed
+
+- **The `certain_questing_additions` crash also happens on quest buttons, not just chapter buttons.**
+  1.1.1 only turned off `PANEL_BUTTON_HOVER`, which guards that mod's *chapter button* handler; its
+  *quest button* handler (`QuestButtonMixin#onDraw`) dereferences the null player too and is guarded by a
+  **different** switch, `QUEST_HOVER`, so the crash remained. Both switches are now turned off for the
+  duration of the local book, all-or-nothing: if either cannot be reached, nothing is changed and the
+  book refuses to open rather than crashing.
+- Checked the other mod injecting the same method (`quest_enhance`'s `QuestButtonMixin`): it does not
+  touch the client player, so it needs no workaround.
+
 ## [1.1.1] - 2026-09-26
 
 ### Fixed

@@ -4,6 +4,7 @@ import dev.wdlpiaoyi.ftbquestsprelude.FTBQuestsPrelude;
 import net.minecraftforge.fml.ModList;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -14,29 +15,36 @@ import java.util.List;
  * and calls {@code cancel()} runs its own code and hides the original method body, so a
  * {@code @Redirect} placed inside that body never executes.
  *
- * <p>So for each known offender this instead neutralises the offender's own switch for the duration of
- * the local book, or - if that is not possible - reports that the book cannot be opened safely. The
- * switches are read-only flags whose value is only written to disk by the offender's own config screen,
- * so changing them at runtime leaves the user's config file alone.
+ * <p>So for each known offender this instead turns the offender's own read-only animation switches off
+ * for the duration of the local book. Those switches are early returns placed in front of the offending
+ * code, and their values are only written to disk by the offender's own config screen, so changing them
+ * at runtime leaves the user's config file alone. If any switch cannot be found, nothing is changed and
+ * the caller is told that opening safely is impossible.
  */
 public final class UnsafeMods {
 
     /** Mod ids with a known null-player crash in the quest screen. */
     private static final List<String> UNSAFE_MODS = List.of("certain_questing_additions");
 
-    /**
-     * {@code certain_questing_additions}' chapter-button mixin returns early when this flag is false,
-     * before the call that dereferences the null player.
-     */
+    /** {@code certain_questing_additions} animation switches, and the code they guard. */
     private static final String CQA_CONFIG = "ru.hollowhorizon.additions.questing.config.QuestAnimationsConfig";
-    private static final String CQA_HOVER_FLAG = "PANEL_BUTTON_HOVER";
+
+    private static final List<Flag> OFFENDER_FLAGS = List.of(
+            // guards ChapterPanelChapterButtonMixin#onDraw's player.getUuid()
+            new Flag(CQA_CONFIG, "PANEL_BUTTON_HOVER"),
+            // guards QuestButtonMixin#onDraw's player.getUuid() / isQuestPinned(player, ...)
+            new Flag(CQA_CONFIG, "QUEST_HOVER")
+    );
+
+    private record Flag(String configClass, String field) {
+    }
+
+    private record AppliedFlag(Object flag, boolean previousValue) {
+    }
 
     private static Boolean present;
     private static boolean blocked;
-
-    /** The flag object that was turned off, and what it was before. */
-    private static Object disabledFlag;
-    private static boolean previousFlagValue;
+    private static final List<AppliedFlag> APPLIED = new ArrayList<>();
 
     private UnsafeMods() {
     }
@@ -72,7 +80,7 @@ public final class UnsafeMods {
             blocked = false;
             return true;
         }
-        if (turnOffOffenderFlag()) {
+        if (!APPLIED.isEmpty() || turnOffOffenderFlags()) {
             blocked = false;
             return true;
         }
@@ -84,41 +92,60 @@ public final class UnsafeMods {
 
     /** Restores whatever was changed, once the local book is no longer on screen. */
     public static void release() {
-        Object flag = disabledFlag;
-        if (flag == null) {
+        if (APPLIED.isEmpty()) {
             return;
         }
-        disabledFlag = null;
-        try {
-            setBoolean(flag, previousFlagValue);
-            FTBQuestsPrelude.LOGGER.info("[Prelude] Restored {} to {}", CQA_HOVER_FLAG, previousFlagValue);
-        } catch (Throwable t) {
-            FTBQuestsPrelude.LOGGER.warn("[Prelude] Could not restore {}", CQA_HOVER_FLAG, t);
+        for (int i = APPLIED.size() - 1; i >= 0; i--) {
+            AppliedFlag applied = APPLIED.get(i);
+            try {
+                setBoolean(applied.flag(), applied.previousValue());
+            } catch (Throwable t) {
+                FTBQuestsPrelude.LOGGER.warn("[Prelude] Could not restore a {} switch", CQA_CONFIG, t);
+            }
         }
+        APPLIED.clear();
+        FTBQuestsPrelude.LOGGER.info("[Prelude] Restored the quest animation switches");
     }
 
-    private static boolean turnOffOffenderFlag() {
-        if (disabledFlag != null) {
-            return true; // already applied
-        }
-        try {
-            Class<?> configClass = Class.forName(CQA_CONFIG);
-            Object flag = configClass.getField(CQA_HOVER_FLAG).get(null);
-            if (flag == null) {
-                return false;
+    /**
+     * Turns every offending switch off. All or nothing: a partial change would still crash, so any
+     * failure rolls back what was already changed and reports failure.
+     */
+    private static boolean turnOffOffenderFlags() {
+        List<AppliedFlag> changed = new ArrayList<>();
+        for (Flag flag : OFFENDER_FLAGS) {
+            try {
+                Class<?> configClass = Class.forName(flag.configClass());
+                Object value = configClass.getField(flag.field()).get(null);
+                if (value == null) {
+                    return rollback(changed, "field " + flag.field() + " is null");
+                }
+                boolean previous = readBoolean(value);
+                if (previous) {
+                    setBoolean(value, false);
+                }
+                changed.add(new AppliedFlag(value, previous));
+            } catch (Throwable t) {
+                return rollback(changed, "cannot reach " + flag.field() + ": " + t);
             }
-            boolean current = readBoolean(flag);
-            if (current) {
-                setBoolean(flag, false);
-            }
-            previousFlagValue = current;
-            disabledFlag = flag;
-            FTBQuestsPrelude.LOGGER.info("[Prelude] Turned {} off for the duration of the local book", CQA_HOVER_FLAG);
-            return true;
-        } catch (Throwable t) {
-            FTBQuestsPrelude.LOGGER.warn("[Prelude] Compatibility workaround for {} failed", CQA_CONFIG, t);
-            return false;
         }
+        APPLIED.addAll(changed);
+        FTBQuestsPrelude.LOGGER.info("[Prelude] Turned {} off for the duration of the local book",
+                OFFENDER_FLAGS.stream().map(Flag::field).toList());
+        return true;
+    }
+
+    private static boolean rollback(List<AppliedFlag> changed, String reason) {
+        for (int i = changed.size() - 1; i >= 0; i--) {
+            AppliedFlag applied = changed.get(i);
+            try {
+                setBoolean(applied.flag(), applied.previousValue());
+            } catch (Throwable ignored) {
+                // best effort
+            }
+        }
+        FTBQuestsPrelude.LOGGER.warn("[Prelude] Compatibility workaround failed: {}", reason);
+        return false;
     }
 
     private static boolean readBoolean(Object flag) throws Exception {
