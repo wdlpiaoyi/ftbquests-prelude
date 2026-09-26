@@ -3,6 +3,7 @@ package dev.wdlpiaoyi.ftbquestsprelude.mixin;
 import dev.ftb.mods.ftblibrary.ui.Panel;
 import dev.ftb.mods.ftbquests.client.gui.quests.CollectRewardsButton;
 import dev.ftb.mods.ftbquests.client.gui.quests.OtherButtonsPanelTop;
+import dev.wdlpiaoyi.ftbquestsprelude.client.ThirdPartyButtons;
 import dev.wdlpiaoyi.ftbquestsprelude.compat.LocalQuestSession;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -27,5 +28,11 @@ public abstract class OtherButtonsPanelTopMixin {
         Panel self = (Panel) (Object) this;
         self.getWidgets().removeIf(widget -> widget instanceof CollectRewardsButton
                 || widget instanceof OtherButtonsPanelTop.AutopinButton);
+    }
+
+    /** See {@code OtherButtonsPanelBottomMixin} for why this runs from {@code alignWidgets}. */
+    @Inject(method = "alignWidgets", remap = false, at = @At("HEAD"))
+    private void prelude$hideThirdPartyButtons(CallbackInfo ci) {
+        ThirdPartyButtons.hideFrom((Panel) (Object) this);
     }
 }

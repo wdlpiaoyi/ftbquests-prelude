@@ -4,6 +4,7 @@ import dev.ftb.mods.ftblibrary.ui.Panel;
 import dev.ftb.mods.ftbquests.client.gui.quests.OtherButtonsPanelBottom;
 import dev.wdlpiaoyi.ftbquestsprelude.client.ReloadButton;
 import dev.wdlpiaoyi.ftbquestsprelude.client.SaveProgressButton;
+import dev.wdlpiaoyi.ftbquestsprelude.client.ThirdPartyButtons;
 import dev.wdlpiaoyi.ftbquestsprelude.compat.LocalQuestSession;
 import dev.wdlpiaoyi.ftbquestsprelude.config.PreludeConfig;
 import net.minecraft.world.entity.player.Player;
@@ -39,5 +40,15 @@ public abstract class OtherButtonsPanelBottomMixin {
             self.add(new SaveProgressButton(self));
         }
         self.add(new ReloadButton(self));
+    }
+
+    /**
+     * Removes third-party buttons in the local book. Runs from {@code alignWidgets} rather than the tail
+     * of {@code addWidgets} so it happens after every other mod's {@code addWidgets} injector, whatever
+     * their mixin priority.
+     */
+    @Inject(method = "alignWidgets", remap = false, at = @At("HEAD"))
+    private void prelude$hideThirdPartyButtons(CallbackInfo ci) {
+        ThirdPartyButtons.hideFrom((Panel) (Object) this);
     }
 }

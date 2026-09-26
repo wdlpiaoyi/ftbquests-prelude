@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **Third-party buttons that only work against a server are hidden in the local book.** `rs_integration`
+  adds "confirm all completable checkmark tasks" (bottom panel) and "scan storage for tasks" (top
+  panel); both drive server-side work that cannot do anything outside a world. Whole mod packages are
+  hidden rather than individual classes, from the panels' layout pass so the removal happens after every
+  other mod's injector regardless of mixin priority.
 - **A hard client crash when another mod's quest-book mixin assumes a client player.**
   `certain_questing_additions` injects into FTB Quests' chapter button and its handler calls
   `Minecraft.getInstance().player.getUUID()`; because it injects at `HEAD` and cancels, the original
