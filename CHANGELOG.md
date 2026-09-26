@@ -4,6 +4,21 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.6] - 2026-09-26
+
+### Added
+
+- **A reload button in the local quest book** (vanilla disc fragment icon) that re-reads the quest
+  data from disk, for when the files were edited outside the game. It keeps the current save/team and
+  the screen the book was opened from.
+
+### Fixed
+
+- **A "visit biome" task could not be added outside a world.** `BiomeTask.getKnownBiomes()` reads
+  `FTBQuestsClient.getClientPlayer().level().registryAccess()`, and the client player is null at the
+  main menu, so constructing the task threw. It now falls back to the last registry access the client
+  saw (cached while a world is loaded), or to the default biome, so the task is creatable.
+
 ## [1.0.5] - 2026-09-26
 
 ### Changed

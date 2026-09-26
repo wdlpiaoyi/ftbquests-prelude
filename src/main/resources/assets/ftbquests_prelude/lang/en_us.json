@@ -15,5 +15,6 @@
   "ftbquests_prelude.toast.no_save_progress.title": "FTB Quests: Prelude",
   "ftbquests_prelude.toast.no_save_progress.desc": "This world has no saved quest progress",
   "ftbquests_prelude.toast.saved.title": "Local Quest Book",
-  "ftbquests_prelude.toast.saved.desc": "Quests saved to config/ftbquests/quests"
+  "ftbquests_prelude.toast.saved.desc": "Quests saved to config/ftbquests/quests",
+  "ftbquests_prelude.reload": "Reload quests from disk"
 }

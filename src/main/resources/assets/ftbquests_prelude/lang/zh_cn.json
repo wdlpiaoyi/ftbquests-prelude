@@ -15,5 +15,6 @@
   "ftbquests_prelude.toast.no_save_progress.title": "FTB Quests: Prelude",
   "ftbquests_prelude.toast.no_save_progress.desc": "该存档没有任务进度",
   "ftbquests_prelude.toast.saved.title": "本地任务书",
-  "ftbquests_prelude.toast.saved.desc": "已保存到 config/ftbquests/quests"
+  "ftbquests_prelude.toast.saved.desc": "已保存到 config/ftbquests/quests",
+  "ftbquests_prelude.reload": "从磁盘重载任务"
 }

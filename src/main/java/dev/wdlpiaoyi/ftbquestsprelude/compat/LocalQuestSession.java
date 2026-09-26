@@ -13,6 +13,7 @@ import dev.wdlpiaoyi.ftbquestsprelude.config.PreludeConfig;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.User;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraftforge.fml.loading.FMLPaths;
 import org.jetbrains.annotations.Nullable;
 
@@ -52,6 +53,10 @@ public final class LocalQuestSession {
     /** Save whose progress is currently shown, or null for the plain local book. */
     @Nullable
     private static Path currentSaveRoot;
+
+    /** Team whose progress is currently shown, or null. */
+    @Nullable
+    private static UUID currentTeamId;
 
     /** Client tick counter, used for save debouncing. */
     private static long tickCounter;
@@ -262,13 +267,57 @@ public final class LocalQuestSession {
         }
     }
 
+    /**
+     * Re-reads the quest data from disk and reopens the book, keeping the current save/team and the
+     * screen the book was opened from. Used by the in-book reload button, for when the files were
+     * edited outside the game.
+     *
+     * @return {@code false} if there is no quest data to load
+     */
+    public static boolean reloadFromDisk() {
+        if (!FTBQuestsCompat.canUseLocalQuestBook()) {
+            return false;
+        }
+        Path dir = getQuestsDir();
+        if (!Files.isDirectory(dir)) {
+            return false;
+        }
+
+        Path saveRoot = currentSaveRoot;
+        UUID teamId = currentTeamId;
+
+        try {
+            // Preserve the Esc chain: the replacement screen must return to the same place.
+            Screen previous = null;
+            QuestScreen current = ClientUtils.getCurrentGuiAs(QuestScreen.class);
+            if (current != null) {
+                previous = current.getPrevScreen();
+            }
+
+            reload(dir, computeFingerprint(dir));
+            if (saveRoot != null && teamId != null) {
+                active.applyTeam(saveRoot, teamId);
+            }
+
+            if (previous != null) {
+                Minecraft.getInstance().setScreen(previous);
+            }
+            active.show();
+            FTBQuestsPrelude.LOGGER.info("[Prelude] Reloaded local quest data from disk");
+            return true;
+        } catch (Throwable t) {
+            FTBQuestsPrelude.LOGGER.error("[Prelude] Failed to reload the local quest data", t);
+            return false;
+        }
+    }
+
     /** Saves pending changes and discards the local quest data. */
-    public static void invalidate() {
-        if (active != null) {
+    public static void invalidate() {        if (active != null) {
             active.saveIfDirty();
         }
         disposeActive();
         currentSaveRoot = null;
+        currentTeamId = null;
     }
 
     private static boolean prepareSession() {
@@ -348,6 +397,7 @@ public final class LocalQuestSession {
 
     /** Loads a save's {@link TeamData} and makes it the team shown by the quest screen. */
     private void applyTeam(Path worldRoot, UUID teamId) {
+        currentTeamId = teamId;
         TeamData data = file.getOrCreateTeamData(teamId);
 
         Path teamFile = worldRoot.resolve("ftbquests").resolve(teamId + ".snbt");
