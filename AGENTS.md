@@ -73,7 +73,10 @@ messages. Dev runtime is under `run/` (git-ignored):
 - `LevelLoadingScreen.render` does not call `super.render`, so its widgets are clickable but never
   drawn; `PreludeClientEvents` draws our button manually in `ScreenEvent.Render.Post`.
 - Prefer FTB-themed icons (`PreludeIcons`: FTBQ theme `save_icon`, FTB Teams `teams.png`) over custom
-  art, so resource packs and FTB Quests themes apply.
+  art, so resource packs and FTB Quests themes apply. These are drawn via `BlitIcon`
+  (vanilla `GuiGraphics.blit`) **on purpose**: FTB Library's own `GuiHelper.drawTexturedRect` drives
+  `RenderSystem`/`Tesselator` by hand and silently draws nothing in packs with vertex-pipeline mods
+  (Accelerated Rendering, Florescent, Chloride, ImmediatelyFast), which is a reported bug.
 
 ## Repo-specific files
 

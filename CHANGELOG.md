@@ -4,6 +4,17 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.3] - 2026-09-26
+
+### Fixed
+
+- **Icons were still invisible in the progress picker (and the book's progress button).** FTB Library
+  draws icons through {@code GuiHelper.drawTexturedRect}, which drives {@code RenderSystem} and
+  {@code Tesselator} by hand; render-optimisation mods that take over the vertex pipeline (Accelerated
+  Rendering, Florescent, Chloride, ImmediatelyFast, ...) can make that silently draw nothing.
+  `PreludeIcons` now uses `BlitIcon`, which draws through the vanilla {@code GuiGraphics.blit} path -
+  the same path this mod's menu button already used successfully in those packs.
+
 ## [1.0.2] - 2026-09-26
 
 ### Fixed
