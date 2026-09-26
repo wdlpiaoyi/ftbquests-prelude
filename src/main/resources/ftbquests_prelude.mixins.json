@@ -21,6 +21,7 @@
     "CreateTaskAtMessageAccessor",
     "DeleteObjectMessageAccessor",
     "EditObjectMessageAccessor",
+    "FluidStackResourceMixin",
     "ImageIconMixin",
     "MoveChapterGroupMessageAccessor",
     "MoveChapterMessageAccessor",

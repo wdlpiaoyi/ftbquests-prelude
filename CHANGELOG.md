@@ -4,6 +4,17 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.10] - 2026-09-26
+
+### Fixed
+
+- **Fluid entries have an icon outside a world.** FTB Library builds a fluid's icon from
+  `ClientUtils.getStillTexture(stack)`, which resolves the fluid's sprite from the block atlas and
+  returns `null` outside a world. `Icon.getIcon(null)` is an empty `Color4I`, not an `ImageIcon`, so
+  the fluid picker drew nothing - and the `ImageIcon` fix could never see it, which is why 1.0.9 did
+  not help. When the normal icon comes back empty, the fluid's bucket item is used instead (drawn by
+  the vanilla item renderer, which works anywhere).
+
 ## [1.0.9] - 2026-09-26
 
 ### Fixed
