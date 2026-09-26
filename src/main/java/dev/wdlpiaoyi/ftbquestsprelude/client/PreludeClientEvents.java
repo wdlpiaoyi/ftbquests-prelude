@@ -126,6 +126,7 @@ public final class PreludeClientEvents {
         try {
             ClientRegistryAccess.capture();
             LocalQuestSession.tick();
+            LocalEditBridge.tick();
         } catch (Throwable t) {
             FTBQuestsPrelude.LOGGER.error("[Prelude] Client tick handling failed", t);
         }

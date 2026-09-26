@@ -57,6 +57,9 @@ public final class LocalEditBridge {
     private static Runnable saveNotifier = () -> {
     };
 
+    /** Set when an edit should refresh the open quest screen on the next client tick. */
+    private static boolean refreshPending;
+
     private LocalEditBridge() {
     }
 
@@ -226,12 +229,35 @@ public final class LocalEditBridge {
     }
 
     private static void refreshScreen() {
+        refreshNow();
+        // Repeat on the next tick: a freshly created object may only be attached to its parent after
+        // this call, in which case the immediate refresh happened too early.
+        refreshPending = true;
+    }
+
+    /** Applies a refresh queued by {@link #refreshScreen()}; called once per client tick. */
+    public static void tick() {
+        if (!refreshPending) {
+            return;
+        }
+        refreshPending = false;
+        refreshNow();
+    }
+
+    private static void refreshNow() {
         QuestScreen screen = ClientUtils.getCurrentGuiAs(QuestScreen.class);
-        if (screen != null) {
-            screen.refreshWidgets();
-            // FTB Quests refreshes the quest detail panel through this; without it a newly added
-            // task or reward only shows up after re-opening the quest.
-            screen.refreshViewQuestPanel();
+        if (screen == null) {
+            return;
+        }
+        screen.refreshWidgets();
+        // FTB Quests refreshes the quest detail panel through this; without it a newly added task or
+        // reward only shows up after re-opening the quest.
+        screen.refreshViewQuestPanel();
+
+        Quest viewed = screen.getViewedQuest();
+        if (viewed != null) {
+            FTBQuestsPrelude.LOGGER.info("[Prelude] Refreshed quest view {}: tasks={}, rewards={}",
+                    viewed.id, viewed.getTasks().size(), viewed.getRewards().size());
         }
     }
 }

@@ -4,6 +4,32 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.8] - 2026-09-26
+
+### Fixed
+
+- **The quest shape textures no longer render as a white block (regression from 1.0.7).** The icon
+  redirect now applies only inside FTB Library's three-panel list screens (this mod's save/team
+  pickers and FTB Library's item and fluid selectors). FTB Quests' own quest screen draws its icons
+  correctly and is deliberately excluded: `blit` uses a shader with no vertex colour, so redirecting
+  it dropped the tint and turned the tinted shape textures white.
+- The redirected path now applies the icon's colour through `RenderSystem.setShaderColor`, so tinted
+  icons (such as the fluid picker's fluid-coloured icons) keep their colour.
+- **A newly added task or reward now appears without re-opening the quest.** The refresh is repeated
+  on the next client tick, for when a new object is attached to its parent after the edit is applied.
+
+### Changed
+
+- The item picker's search-mode button is hidden while the local quest book is open: the other modes
+  are meaningless without a world, and "all items" is now registry-backed.
+- Documented in both READMEs that modded biomes only appear after a world has been joined in the
+  session (biomes are a server-synced dynamic registry).
+
+### Not fixed (by choice)
+
+- The dimension task icon and the reward-table screen's close "x". Both behave the same in unmodified
+  FTB Quests.
+
 ## [1.0.7] - 2026-09-26
 
 ### Fixed

@@ -1,35 +1,42 @@
 package dev.wdlpiaoyi.ftbquestsprelude.mixin;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import dev.ftb.mods.ftblibrary.icon.Color4I;
 import dev.ftb.mods.ftblibrary.icon.ImageIcon;
+import dev.ftb.mods.ftblibrary.ui.IScreenWrapper;
+import dev.ftb.mods.ftblibrary.ui.misc.AbstractThreePanelScreen;
 import dev.wdlpiaoyi.ftbquestsprelude.FTBQuestsPrelude;
 import dev.wdlpiaoyi.ftbquestsprelude.compat.LocalQuestSession;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.resources.ResourceLocation;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
- * Draws FTB Library's texture icons through the vanilla {@code GuiGraphics.blit} path while the local
- * quest book is open.
+ * Draws FTB Library's texture icons through the vanilla {@code GuiGraphics.blit} path, but only inside
+ * FTB Library's own three-panel list screens (this mod's save/team pickers and FTB Library's item and
+ * fluid selectors) while the local quest book is active.
  *
- * <p>FTB Library's {@code ImageIcon.draw} goes through {@code GuiHelper.drawTexturedRect}, which drives
- * {@code RenderSystem} / {@code Tesselator} by hand; in packs with vertex-pipeline mods that can draw
- * nothing. This covers every texture-based icon FTB Quests uses (task type icons such as the dimension
- * portal, fluid icons, theme icons), not just this mod's own.
+ * <p>Those screens are where {@code ImageIcon} fails to draw; FTB Quests' own quest screen draws its
+ * icons (the quest shape textures in particular) correctly, and redirecting them here loses the tint -
+ * {@code blit} uses a shader with no vertex colour - which turned the shapes solid white. So the quest
+ * screen is deliberately excluded.
  *
- * <p>Only icons whose UVs span the whole texture are redirected, and only outside a world; tiled
- * backgrounds and UV-sliced sprite sheets keep FTB Library's own drawing.
+ * <p>Tiled and UV-sliced icons always keep FTB Library's own drawing.
  */
 @Mixin(value = ImageIcon.class, remap = false)
 public abstract class ImageIconMixin {
 
     @Unique
-    private static final java.util.Set<net.minecraft.resources.ResourceLocation> prelude$loggedTextures =
-            new java.util.HashSet<>();
+    private static final Set<ResourceLocation> prelude$loggedTextures = new HashSet<>();
 
     @Unique
     private static int prelude$loggedCount;
@@ -40,14 +47,19 @@ public abstract class ImageIconMixin {
             return;
         }
 
+        Screen screen = Minecraft.getInstance().screen;
+        if (!(screen instanceof IScreenWrapper wrapper)
+                || !(wrapper.getGui() instanceof AbstractThreePanelScreen)) {
+            return;
+        }
+
         ImageIcon self = (ImageIcon) (Object) this;
         if (self.tileSize > 0.0 || self.minU != 0.0f || self.minV != 0.0f
                 || self.maxU != 1.0f || self.maxV != 1.0f) {
             return;
         }
 
-        // Diagnostic: one line per distinct texture (capped), so it is possible to tell which icons
-        // actually take this path and whether their resource resolves.
+        // Diagnostic: one line per distinct texture (capped), to tell which icons take this path.
         if (prelude$loggedCount < 60 && prelude$loggedTextures.add(self.texture)) {
             prelude$loggedCount++;
             boolean present = Minecraft.getInstance().getResourceManager().getResource(self.texture).isPresent();
@@ -58,15 +70,16 @@ public abstract class ImageIconMixin {
         var pose = graphics.pose();
         pose.pushPose();
         pose.translate(x, y, 0.0);
-        // Any consistent square source size samples the whole texture; the pose does the scaling.
+        // Any consistent square source samples the whole texture; the pose does the scaling.
         pose.scale(w / 16.0f, h / 16.0f, 1.0f);
 
         Color4I color = self.color;
-        if (color != null) {
-            graphics.setColor(color.redf(), color.greenf(), color.bluef(), color.alphaf());
+        if (color != null && !color.isEmpty()) {
+            // blit cannot tint through GuiGraphics, so apply the colour to the shader directly.
+            RenderSystem.setShaderColor(color.redf(), color.greenf(), color.bluef(), color.alphaf());
         }
         graphics.blit(self.texture, 0, 0, 0, 0, 16, 16, 16, 16);
-        graphics.setColor(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
 
         pose.popPose();
         ci.cancel();

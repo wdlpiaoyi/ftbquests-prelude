@@ -174,6 +174,9 @@ Compiled and run against the FTB maven releases:
   interactions differ from the in-world book.
 - Team names and members are resolved from local save data; players who were never
   seen locally may appear as a short UUID.
+- **Modded biomes only appear in the biome picker after a world has been joined in the
+  session.** Biomes are a server-synced dynamic registry, so at the main menu the client
+  has none at all; vanilla biomes are listed regardless.
 
 ## Changelog
 
