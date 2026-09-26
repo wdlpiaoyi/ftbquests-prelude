@@ -229,6 +229,9 @@ public final class LocalEditBridge {
         QuestScreen screen = ClientUtils.getCurrentGuiAs(QuestScreen.class);
         if (screen != null) {
             screen.refreshWidgets();
+            // FTB Quests refreshes the quest detail panel through this; without it a newly added
+            // task or reward only shows up after re-opening the quest.
+            screen.refreshViewQuestPanel();
         }
     }
 }

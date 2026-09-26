@@ -4,6 +4,31 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.7] - 2026-09-26
+
+### Fixed
+
+- **Texture-based icons now draw in the local quest book** - dimension task (nether portal), fluid
+  task, the fluid picker and the FTB Quests theme icons. `ImageIcon` is redirected to the vanilla
+  `GuiGraphics.blit` path while the local book is open, the same fix applied to this mod's own icons in
+  1.0.3. Tiled backgrounds and UV-sliced sprite sheets keep FTB Library's own drawing, and nothing
+  changes inside a world.
+- **The item picker is no longer empty at the main menu.** FTB Library's "all items" mode lists
+  creative tab contents, which are only populated after a world load; with the local book open outside
+  a world the selector now reads the item registry instead. This also fixes the "all items" count
+  being 0 after returning from a world.
+- **A newly added task or reward appears immediately.** The edit bridge now also calls FTB Quests'
+  `QuestScreen.refreshViewQuestPanel()`, which is what refreshes the quest detail panel; previously it
+  only showed up after re-opening the quest.
+- **The biome list outside a world** now falls back to all vanilla biomes (read from the `Biomes`
+  constants) instead of only the default. Modded biomes appear once a world has been joined in the
+  session.
+
+### Notes
+
+- The reward-table screen's close "x" and the fluid picker's icons are missing in unmodified FTB
+  Quests too; the `ImageIcon` fix above covers them in the local book.
+
 ## [1.0.6] - 2026-09-26
 
 ### Added

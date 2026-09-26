@@ -5,12 +5,14 @@ import dev.wdlpiaoyi.ftbquestsprelude.client.ClientRegistryAccess;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.biome.Biomes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,7 +36,9 @@ public abstract class BiomeTaskMixin {
 
         RegistryAccess access = ClientRegistryAccess.get();
         if (access == null) {
-            cir.setReturnValue(List.of(Biomes.PLAINS.location().toString()));
+            // Never joined a world this session, so there is no dynamic registry at all.
+            // The vanilla biome constants are still a far better fallback than the default.
+            cir.setReturnValue(vanillaBiomes());
             return;
         }
 
@@ -49,5 +53,28 @@ public abstract class BiomeTaskMixin {
                 .sorted()
                 .forEach(biomes::add);
         cir.setReturnValue(biomes);
+    }
+
+    /**
+     * Every vanilla biome id, read from the {@code Biomes} constants. Used when the client has no
+     * registry access yet; modded biomes appear once a world has been joined in this session.
+     */
+    private static List<String> vanillaBiomes() {
+        List<String> ids = new ArrayList<>();
+        for (Field field : Biomes.class.getDeclaredFields()) {
+            if (field.getType() != ResourceKey.class) {
+                continue;
+            }
+            try {
+                field.setAccessible(true);
+                if (field.get(null) instanceof ResourceKey<?> key) {
+                    ids.add(key.location().toString());
+                }
+            } catch (Throwable ignored) {
+                // skip anything we cannot read
+            }
+        }
+        ids.sort(String::compareTo);
+        return ids;
     }
 }
