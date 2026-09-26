@@ -14,6 +14,8 @@
   "ftbquests_prelude.toast.unavailable.desc": "FTB Quests 缺失或版本不受支持",
   "ftbquests_prelude.toast.no_save_progress.title": "FTB Quests: Prelude",
   "ftbquests_prelude.toast.no_save_progress.desc": "该存档没有任务进度",
+  "ftbquests_prelude.toast.saved.title": "本地任务书",
+  "ftbquests_prelude.toast.saved.desc": "已保存到 config/ftbquests/quests",
   "key.ftbquests_prelude.open_local_book": "打开本地任务书",
   "key.categories.ftbquests_prelude": "FTB Quests: Prelude"
 }

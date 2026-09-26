@@ -4,6 +4,27 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1] - 2026-09-26
+
+### Fixed
+
+- **Missing save icon.** The progress buttons and picker rows looked up FTB Quests'
+  `ThemeProperties.SAVE_ICON`, which resolves to an *empty* icon when the active theme does not
+  define `save_icon` (`IconProperty` defaults to `Color4I.empty()`), so nothing was drawn. They now
+  reference `ftbquests:textures/gui/save.png` and `ftbteams:textures/teams.png` directly.
+- **Progress button did nothing for a single-team save.** It silently re-applied the team that was
+  already displayed, which looks like the click was ignored. It now always opens the picker, so the
+  *Switch save...* entry stays reachable.
+- **"Paste quest" and "paste chapter image" were ignored outside a world.** `CopyQuestMessage` and
+  `CopyChapterImageMessage` are now applied to the local quest file, mirroring the server logic.
+- **The quest book's "save" button did nothing.** `ForceSaveMessage` now writes the local quest file
+  to disk immediately and shows a toast.
+
+### Notes
+
+- Messages that need a server are still ignored: reward claiming, task submission, progress resets
+  and per-player pinning.
+
 ## [1.0.0] - 2026-09-26
 
 First release.

@@ -110,6 +110,19 @@ public final class LocalQuestSession {
         }
     }
 
+    /**
+     * Immediately writes the local quest data to disk (the quest book's own "save" button).
+     *
+     * @return {@code false} if there is no active local session
+     */
+    public static boolean forceSave() {
+        if (active == null) {
+            return false;
+        }
+        active.save();
+        return true;
+    }
+
     /** Called once per client tick; flushes pending local edits after the configured debounce. */
     public static void tick() {
         tickCounter++;

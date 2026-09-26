@@ -2,6 +2,7 @@ package dev.wdlpiaoyi.ftbquestsprelude.client;
 
 import dev.wdlpiaoyi.ftbquestsprelude.FTBQuestsPrelude;
 import dev.wdlpiaoyi.ftbquestsprelude.compat.FTBQuestsCompat;
+import dev.wdlpiaoyi.ftbquestsprelude.compat.LocalEditBridge;
 import dev.wdlpiaoyi.ftbquestsprelude.compat.LocalQuestSession;
 import dev.wdlpiaoyi.ftbquestsprelude.compat.SaveProgress;
 import dev.wdlpiaoyi.ftbquestsprelude.config.PreludeConfig;
@@ -51,6 +52,9 @@ public final class PreludeClientEvents {
     @SubscribeEvent
     public static void onScreenInit(ScreenEvent.Init.Post event) {
         try {
+            // Let the compat layer report an on-demand save without depending on the UI package.
+            LocalEditBridge.setSaveNotifier(Notifications::saved);
+
             Screen screen = event.getScreen();
             if (!isSupportedScreen(screen)) {
                 return;

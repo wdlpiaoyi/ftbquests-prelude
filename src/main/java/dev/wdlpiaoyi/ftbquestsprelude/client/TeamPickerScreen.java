@@ -44,7 +44,7 @@ public class TeamPickerScreen extends AbstractButtonListScreen {
     @Override
     public void addButtons(Panel panel) {
         panel.add(SimpleTextButton.create(panel,
-                Component.translatable("ftbquests_prelude.save_progress.switch_save"), PreludeIcons.save(),
+                Component.translatable("ftbquests_prelude.save_progress.switch_save"), PreludeIcons.SAVE,
                 button -> {
                     Minecraft.getInstance().setScreen(launcher);
                     new SavePickerScreen(launcher).openGui();

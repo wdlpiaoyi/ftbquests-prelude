@@ -23,6 +23,10 @@ public final class Notifications {
         show("ftbquests_prelude.toast.no_data.title", "ftbquests_prelude.toast.no_data.desc");
     }
 
+    public static void saved() {
+        show("ftbquests_prelude.toast.saved.title", "ftbquests_prelude.toast.saved.desc");
+    }
+
     public static void unavailable() {
         show("ftbquests_prelude.toast.unavailable.title", "ftbquests_prelude.toast.unavailable.desc");
     }

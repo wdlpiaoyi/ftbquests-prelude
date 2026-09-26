@@ -19,7 +19,7 @@ import java.util.List;
 public class SaveProgressButton extends TabButton {
 
     public SaveProgressButton(Panel panel) {
-        super(panel, Component.translatable("ftbquests_prelude.save_progress.title"), PreludeIcons.save());
+        super(panel, Component.translatable("ftbquests_prelude.save_progress.title"), PreludeIcons.SAVE);
     }
 
     @Override
@@ -36,12 +36,14 @@ public class SaveProgressButton extends TabButton {
         }
 
         List<SaveProgress.TeamInfo> teams = SaveProgress.listTeams(currentSave);
-        if (teams.size() == 1) {
-            TeamPickerScreen.selectTeam(launcher, currentSave, teams.get(0));
-        } else if (teams.isEmpty()) {
+        if (teams.isEmpty()) {
             Notifications.noSaveProgress();
-        } else {
-            new TeamPickerScreen(currentSave, teams, launcher).openGui();
+            return;
         }
+
+        // Always show the picker, even when the save only has one team. Silently re-applying the team
+        // that is already displayed changes nothing on screen, which reads as "the button does
+        // nothing" - and it would also hide the "Switch save..." entry.
+        new TeamPickerScreen(currentSave, teams, launcher).openGui();
     }
 }

@@ -14,6 +14,8 @@
   "ftbquests_prelude.toast.unavailable.desc": "FTB Quests is missing or its version is not supported",
   "ftbquests_prelude.toast.no_save_progress.title": "FTB Quests: Prelude",
   "ftbquests_prelude.toast.no_save_progress.desc": "This world has no saved quest progress",
+  "ftbquests_prelude.toast.saved.title": "Local Quest Book",
+  "ftbquests_prelude.toast.saved.desc": "Quests saved to config/ftbquests/quests",
   "key.ftbquests_prelude.open_local_book": "Open Local Quest Book",
   "key.categories.ftbquests_prelude": "FTB Quests: Prelude"
 }

@@ -14,6 +14,8 @@
     "ClientQuestFileAccessor",
     "ClientQuestFileMixin",
     "CollectRewardsButtonMixin",
+    "CopyChapterImageMessageAccessor",
+    "CopyQuestMessageAccessor",
     "CreateObjectMessageAccessor",
     "CreateTaskAtMessageAccessor",
     "DeleteObjectMessageAccessor",

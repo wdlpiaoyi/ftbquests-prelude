@@ -33,7 +33,7 @@ public class SavePickerScreen extends AbstractButtonListScreen {
     @Override
     public void addButtons(Panel panel) {
         for (SaveProgress.SaveInfo save : SaveProgress.listSaves()) {
-            panel.add(SimpleTextButton.create(panel, describe(save), PreludeIcons.save(), button -> choose(save),
+            panel.add(SimpleTextButton.create(panel, describe(save), PreludeIcons.SAVE, button -> choose(save),
                     Component.literal(save.levelId())));
         }
     }
