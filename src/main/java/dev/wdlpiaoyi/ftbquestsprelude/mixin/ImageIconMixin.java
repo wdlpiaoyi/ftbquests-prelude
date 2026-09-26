@@ -28,7 +28,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class ImageIconMixin {
 
     @Unique
-    private static boolean prelude$logged;
+    private static final java.util.Set<net.minecraft.resources.ResourceLocation> prelude$loggedTextures =
+            new java.util.HashSet<>();
+
+    @Unique
+    private static int prelude$loggedCount;
 
     @Inject(method = "draw", remap = false, at = @At("HEAD"), cancellable = true)
     private void prelude$blit(GuiGraphics graphics, int x, int y, int w, int h, CallbackInfo ci) {
@@ -42,8 +46,10 @@ public abstract class ImageIconMixin {
             return;
         }
 
-        if (!prelude$logged) {
-            prelude$logged = true;
+        // Diagnostic: one line per distinct texture (capped), so it is possible to tell which icons
+        // actually take this path and whether their resource resolves.
+        if (prelude$loggedCount < 60 && prelude$loggedTextures.add(self.texture)) {
+            prelude$loggedCount++;
             boolean present = Minecraft.getInstance().getResourceManager().getResource(self.texture).isPresent();
             FTBQuestsPrelude.LOGGER.info("[Prelude] Texture icon via blit: texture={}, resourcePresent={}, color={}",
                     self.texture, present, self.color);
