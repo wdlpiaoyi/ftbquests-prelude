@@ -137,7 +137,10 @@ public final class PreludeClientEvents {
     private static void openSaveOrDefault(Path worldRoot) {
         List<SaveProgress.TeamInfo> teams = SaveProgress.listTeams(worldRoot);
         if (teams.isEmpty()) {
-            Notifications.noSaveProgress();
+            // That save has no progress yet - show the plain local book instead of refusing to open.
+            if (!LocalQuestSession.openAndShow()) {
+                notifyOpenFailed();
+            }
         } else if (teams.size() == 1) {
             if (!LocalQuestSession.openSaveProgress(worldRoot, teams.get(0).id())) {
                 notifyOpenFailed();

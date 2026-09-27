@@ -4,6 +4,18 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.3] - 2026-09-27
+
+### Fixed
+
+- **A save with no quest progress no longer blocks the local book.** Opening the book from the
+  select-world screen for a save that has no progress yet showed "this world has no saved quest
+  progress" and opened nothing; it now falls back to the plain local book, which is the whole point of
+  the mod.
+- **The create-world screen is no longer treated as a world selection.** It has no highlighted save, so
+  the button there always opens the plain local book; previously it could take the save-progress path and
+  end up refusing to open.
+
 ## [1.1.2] - 2026-09-27
 
 ### Fixed

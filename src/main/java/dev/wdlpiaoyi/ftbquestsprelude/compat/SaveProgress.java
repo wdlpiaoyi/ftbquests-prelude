@@ -7,6 +7,7 @@ import dev.wdlpiaoyi.ftbquestsprelude.mixin.SelectWorldScreenAccessor;
 import dev.wdlpiaoyi.ftbquestsprelude.mixin.WorldListEntryAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.worldselection.CreateWorldScreen;
 import net.minecraft.client.gui.screens.worldselection.SelectWorldScreen;
 import net.minecraft.client.gui.screens.worldselection.WorldSelectionList;
 import org.jetbrains.annotations.Nullable;
@@ -190,6 +191,11 @@ public final class SaveProgress {
     @Nullable
     public static Path selectedWorldRoot() {
         Screen screen = Minecraft.getInstance().screen;
+
+        // The create-world screen is not a world selection: there is nothing to default to.
+        if (screen instanceof CreateWorldScreen) {
+            return null;
+        }
 
         if (screen instanceof SelectWorldScreen selectWorld) {
             WorldSelectionList list = ((SelectWorldScreenAccessor) selectWorld).prelude$getList();
