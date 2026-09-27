@@ -1,5 +1,7 @@
 package dev.wdlpiaoyi.ftbquestsprelude.client;
 
+import dev.ftb.mods.ftblibrary.ui.IScreenWrapper;
+import dev.ftb.mods.ftblibrary.ui.misc.AbstractThreePanelScreen;
 import dev.wdlpiaoyi.ftbquestsprelude.FTBQuestsPrelude;
 import dev.wdlpiaoyi.ftbquestsprelude.compat.FTBQuestsCompat;
 import dev.wdlpiaoyi.ftbquestsprelude.compat.LocalEditBridge;
@@ -92,7 +94,21 @@ public final class PreludeClientEvents {
                 || screen instanceof SelectWorldScreen
                 || screen instanceof CreateWorldScreen
                 || screen instanceof LevelLoadingScreen
-                || isLoadingIntoWorld();
+                // World-loading screens are not always a LevelLoadingScreen (packs wrap or replace it),
+                // so treat "loading into a world" as an entry screen too - but never the quest book or
+                // its pickers, which would otherwise get an entry button drawn on top of them.
+                || (isLoadingIntoWorld() && !isQuestUi(screen));
+    }
+
+    /**
+     * True for the quest book itself and for FTB Library's list screens (this mod's save/team pickers
+     * and the item/fluid selectors).
+     */
+    private static boolean isQuestUi(Screen screen) {
+        if (LocalQuestSession.isQuestScreenOpen()) {
+            return true;
+        }
+        return screen instanceof IScreenWrapper wrapper && wrapper.getGui() instanceof AbstractThreePanelScreen;
     }
 
     /**

@@ -4,6 +4,16 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.3] - 2026-09-27
+
+### Fixed
+
+- **Regression from 1.1.2: the entry button appeared on top of the quest book itself.** The
+  world-loading test ("an integrated server is running while the client level is not loaded yet") is also
+  true while the book is open during a world load, so the button was added to the quest book screen. The
+  test now excludes the quest book and FTB Library's list screens (the save/team pickers and the
+  item/fluid selectors).
+
 ## [1.1.2] - 2026-09-27
 
 ### Fixed
