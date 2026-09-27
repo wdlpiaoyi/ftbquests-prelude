@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   book refuses to open rather than crashing.
 - Checked the other mod injecting the same method (`quest_enhance`'s `QuestButtonMixin`): it does not
   touch the client player, so it needs no workaround.
+- **The entry button now also appears on world-loading screens that are not the vanilla
+  `LevelLoadingScreen`.** Packs replace or wrap that screen (FancyMenu and friends), so the button is
+  matched by state - an integrated server is running while the client level is not loaded yet - instead
+  of by class alone.
 
 ## [1.1.1] - 2026-09-26
 

@@ -91,7 +91,18 @@ public final class PreludeClientEvents {
         return screen instanceof TitleScreen
                 || screen instanceof SelectWorldScreen
                 || screen instanceof CreateWorldScreen
-                || screen instanceof LevelLoadingScreen;
+                || screen instanceof LevelLoadingScreen
+                || isLoadingIntoWorld();
+    }
+
+    /**
+     * True while the client is loading into a world: the (integrated) server is up but the client level
+     * is not there yet. Used because the world-loading screen is not necessarily a
+     * {@code LevelLoadingScreen} - packs replace or wrap it (FancyMenu and friends).
+     */
+    private static boolean isLoadingIntoWorld() {
+        Minecraft minecraft = Minecraft.getInstance();
+        return minecraft.getSingleplayerServer() != null && minecraft.level == null;
     }
 
     /**
@@ -103,7 +114,7 @@ public final class PreludeClientEvents {
     public static void onScreenRender(ScreenEvent.Render.Post event) {
         try {
             Screen screen = event.getScreen();
-            if (!(screen instanceof LevelLoadingScreen)) {
+            if (!(screen instanceof LevelLoadingScreen) && !isLoadingIntoWorld()) {
                 return;
             }
             for (GuiEventListener listener : screen.children()) {
