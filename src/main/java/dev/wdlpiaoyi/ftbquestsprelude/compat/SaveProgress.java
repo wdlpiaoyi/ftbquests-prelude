@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -58,19 +59,42 @@ public final class SaveProgress {
         if (!Files.isDirectory(base)) {
             return List.of();
         }
-        List<SaveInfo> saves = new ArrayList<>();
+        record Candidate(String levelId, long lastPlayed, int teamCount) {
+        }
+        List<Candidate> candidates = new ArrayList<>();
         try (Stream<Path> stream = Files.list(base)) {
-            for (Path dir : stream.filter(Files::isDirectory).sorted().toList()) {
-                if (!Files.isRegularFile(dir.resolve("level.dat"))) {
+            for (Path dir : stream.filter(Files::isDirectory).toList()) {
+                Path levelDat = dir.resolve("level.dat");
+                if (!Files.isRegularFile(levelDat)) {
                     continue;
                 }
                 int teamCount = listTeamIds(dir).size();
-                saves.add(new SaveInfo(dir.getFileName().toString(), teamCount, teamCount > 0));
+                candidates.add(new Candidate(dir.getFileName().toString(), lastPlayed(levelDat, dir), teamCount));
             }
         } catch (IOException e) {
             FTBQuestsPrelude.LOGGER.warn("[Prelude] Could not list saves in {}", base, e);
         }
+
+        // Most recently played first: that is almost always the one you want.
+        candidates.sort(Comparator.comparingLong(Candidate::lastPlayed).reversed());
+        List<SaveInfo> saves = new ArrayList<>(candidates.size());
+        for (Candidate candidate : candidates) {
+            saves.add(new SaveInfo(candidate.levelId(), candidate.teamCount(), candidate.teamCount() > 0));
+        }
         return saves;
+    }
+
+    /** When a save was last played: {@code level.dat} is rewritten on every save. */
+    private static long lastPlayed(Path levelDat, Path fallbackDir) {
+        try {
+            return Files.getLastModifiedTime(levelDat).toMillis();
+        } catch (IOException e) {
+            try {
+                return Files.getLastModifiedTime(fallbackDir).toMillis();
+            } catch (IOException ignored) {
+                return 0L;
+            }
+        }
     }
 
     public static List<TeamInfo> listTeams(Path worldRoot) {

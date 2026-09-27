@@ -41,6 +41,13 @@ public final class PreludeConfig {
         public final ForgeConfigSpec.BooleanValue autoSaveOnClose;
 
         /**
+         * Minimum minutes between automatic backups. A backup is always taken before the first save of a
+         * session, then at most this often; without this, every auto-save copied the whole quests folder
+         * and {@code backupCount} only covered the last few seconds of editing.
+         */
+        public final ForgeConfigSpec.IntValue backupIntervalMinutes;
+
+        /**
          * Seconds of inactivity after an edit before it is written to disk. Lower values save
          * sooner but write more often; higher values batch more edits per write.
          */
@@ -73,6 +80,13 @@ public final class PreludeConfig {
          */
         public final ForgeConfigSpec.ConfigValue<List<? extends String>> hiddenButtonPackages;
 
+        /**
+         * Whether this mod may work around third-party mods that crash the quest book outside a world,
+         * by turning their own read-only switches off while the local book is open (their config file is
+         * never written). With this off, the local book refuses to open instead of changing anything.
+         */
+        public final ForgeConfigSpec.BooleanValue compatWorkarounds;
+
         Common(ForgeConfigSpec.Builder builder) {
             builder.comment("FTB Quests: Prelude settings",
                     "This mod is client-side only; these values only affect the local client.").push("general");
@@ -86,6 +100,13 @@ public final class PreludeConfig {
                     .comment("Save pending local edits when the local quest screen is closed.",
                             "The debounced auto-save below still runs while the screen is open.")
                     .define("autoSaveOnClose", true);
+
+            backupIntervalMinutes = builder
+                    .comment("Minimum minutes between automatic backups of the quests folder.",
+                            "A backup is always taken before the first save of a session, then at most",
+                            "this often. Keeping this low means more restore points but a full folder",
+                            "copy more often; keeping it high makes backupCount cover a longer period.")
+                    .defineInRange("backupIntervalMinutes", 10, 1, 1440);
 
             autoSaveDebounceSeconds = builder
                     .comment("Seconds of inactivity after an edit before it is written to disk.",
@@ -118,6 +139,13 @@ public final class PreludeConfig {
                     .defineListAllowEmpty("hiddenButtonPackages",
                             List.of("com.huanghuang.rsintegration."),
                             o -> o instanceof String);
+
+            compatWorkarounds = builder
+                    .comment("Allow working around third-party mods that crash the quest book outside a",
+                            "world, by turning their own read-only animation switches off while the local",
+                            "book is open. Their config file is never written. With this off, the local",
+                            "book refuses to open instead of changing anything.")
+                    .define("compatWorkarounds", true);
 
             builder.pop();
         }

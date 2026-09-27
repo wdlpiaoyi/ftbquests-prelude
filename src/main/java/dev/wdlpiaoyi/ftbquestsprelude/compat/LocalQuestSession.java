@@ -20,6 +20,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -60,6 +61,9 @@ public final class LocalQuestSession {
 
     /** Client tick counter, used for save debouncing. */
     private static long tickCounter;
+
+    /** When the last backup was taken, or 0 when none was taken in this session. */
+    private static long lastBackupMillis;
 
     private final ClientQuestFile file;
     private final Path questsDir;
@@ -386,6 +390,7 @@ public final class LocalQuestSession {
         session.fingerprint = diskFingerprint;
         session.defaultTeamData = session.file.selfTeamData;
         active = session;
+        lastBackupMillis = 0L;
         FTBQuestsPrelude.LOGGER.info("[Prelude] Loaded local quest data from {} (editor mode: {})",
                 dir, session.editing ? "on" : "off");
     }
@@ -435,7 +440,8 @@ public final class LocalQuestSession {
         }
 
         file.selfTeamData = data;
-        FTBQuestsPrelude.LOGGER.info("[Prelude] Showing save progress for team {}", teamId);
+        LastTeam.put(worldRoot.getFileName().toString(), teamId);
+        FTBQuestsPrelude.LOGGER.debug("[Prelude] Showing save progress for team {}", teamId);
     }
 
     /**
@@ -457,7 +463,9 @@ public final class LocalQuestSession {
 
     private void save() {
         try {
-            BackupManager.backupDirectory(questsDir, "quests");
+            if (shouldBackup() && BackupManager.backupDirectory(questsDir, "quests").isPresent()) {
+                lastBackupMillis = Util.getMillis();
+            }
             file.writeDataFull(questsDir);
             pruneOrphanFiles();
             fingerprint = computeFingerprint(questsDir);
@@ -467,6 +475,20 @@ public final class LocalQuestSession {
             FTBQuestsPrelude.LOGGER.error("[Prelude] Failed to save local quest data", t);
         }
         dirty = false;
+    }
+
+    /**
+     * Backups copy the whole quests folder, so doing it on every debounced save is both expensive and
+     * makes {@code backupCount} cover only the last few seconds of editing. The first save of a session
+     * always backs up; after that, at most every {@code backupIntervalMinutes}. {@code backupCount = 0}
+     * disables backups entirely.
+     */
+    private static boolean shouldBackup() {
+        if (PreludeConfig.COMMON.backupCount.get() <= 0) {
+            return false;
+        }
+        long interval = PreludeConfig.COMMON.backupIntervalMinutes.get() * 60_000L;
+        return lastBackupMillis == 0L || Util.getMillis() - lastBackupMillis >= interval;
     }
 
     /**
@@ -515,9 +537,11 @@ public final class LocalQuestSession {
         try (Stream<Path> stream = Files.walk(dir)) {
             List<Path> files = stream.filter(Files::isRegularFile).sorted().toList();
             for (Path path : files) {
+                // One readAttributes call instead of separate size / lastModified queries.
+                BasicFileAttributes attributes = Files.readAttributes(path, BasicFileAttributes.class);
                 hash = hash * 31L + dir.relativize(path).toString().hashCode();
-                hash = hash * 31L + Files.size(path);
-                hash = hash * 31L + Files.getLastModifiedTime(path).toMillis();
+                hash = hash * 31L + attributes.size();
+                hash = hash * 31L + attributes.lastModifiedTime().toMillis();
             }
         } catch (IOException e) {
             return -2L;

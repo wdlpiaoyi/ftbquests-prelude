@@ -84,12 +84,14 @@ It is a client-side mod, so these values only affect your client.
 | Option | Default | Range | Description |
 |---|---|---|---|
 | `backupCount` | `10` | `0`–`1000` | Timestamped backups of the quests folder to keep. `0` disables backups. |
+| `backupIntervalMinutes` | `10` | `1`–`1440` | Minimum minutes between automatic backups. |
 | `autoSaveOnClose` | `true` | — | Write pending local edits when the local quest screen closes. |
 | `autoSaveDebounceSeconds` | `5` | `1`–`300` | Seconds of inactivity before pending edits are written to disk. |
 | `editorModeDefault` | `false` | — | Open the local quest book directly in editor mode. |
 | `showEntryButtons` | `true` | — | Show the top-right book button on the menu screens (the only entry point). |
 | `showSaveProgressButton` | `true` | — | Show the save-icon progress button inside the quest book. |
 | `hiddenButtonPackages` | `["com.huanghuang.rsintegration."]` | — | Java package prefixes of third-party quest book buttons to hide in the local book. |
+| `compatWorkarounds` | `true` | — | Allow working around third-party mods that crash the book outside a world (their config is never written). |
 
 ## Data and backups
 
@@ -100,7 +102,8 @@ It is a client-side mod, so these values only affect your client.
 | `<save>/ftbquests/<team-uuid>.snbt` | A single-player save's quest progress, read only. |
 | `<save>/ftbteams/...` | FTB Teams data, read only, used to list teams and members. |
 
-Backups are taken before each save and pruned to `backupCount`; nothing else writes
+A backup is taken before the first save of a session and then at most every
+`backupIntervalMinutes`, and old ones are pruned to `backupCount`; nothing else writes
 to the config folder.
 
 ## Building

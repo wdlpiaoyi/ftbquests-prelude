@@ -49,12 +49,14 @@ The config file is `<config>/ftbq_prelude/ftbquests_prelude-common.toml`.
 | Option | Default | Range | Description |
 | --- | --- | --- | --- |
 | `backupCount` | `10` | 0–1000 | Timestamped backups to keep. `0` disables backups. |
+| `backupIntervalMinutes` | `10` | 1–1440 | Minimum minutes between automatic backups. |
 | `autoSaveOnClose` | `true` | — | Save pending edits when the screen closes. |
 | `autoSaveDebounceSeconds` | `5` | 1–300 | Seconds of inactivity before pending edits are saved. |
 | `editorModeDefault` | `false` | — | Open the local book in editor mode. |
 | `showEntryButtons` | `true` | — | Show the menu-screen buttons (the only entry point). |
 | `showSaveProgressButton` | `true` | — | Show the progress button inside the book. |
 | `hiddenButtonPackages` | `["com.huanghuang.rsintegration."]` | — | Java package prefixes of third-party quest book buttons to hide while the local book is open. |
+| `compatWorkarounds` | `true` | — | Allow working around third-party mods that crash the book outside a world (their config is never written). |
 
 ## Compatibility
 

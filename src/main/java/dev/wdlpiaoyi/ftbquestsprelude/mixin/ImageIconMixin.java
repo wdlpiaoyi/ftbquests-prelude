@@ -63,7 +63,7 @@ public abstract class ImageIconMixin {
         if (prelude$loggedCount < 60 && prelude$loggedTextures.add(self.texture)) {
             prelude$loggedCount++;
             boolean present = Minecraft.getInstance().getResourceManager().getResource(self.texture).isPresent();
-            FTBQuestsPrelude.LOGGER.info("[Prelude] Texture icon via blit: texture={}, resourcePresent={}, color={}",
+            FTBQuestsPrelude.LOGGER.debug("[Prelude] Texture icon via blit: texture={}, resourcePresent={}, color={}",
                     self.texture, present, self.color);
         }
 

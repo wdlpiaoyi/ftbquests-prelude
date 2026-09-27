@@ -4,6 +4,30 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.4] - 2026-09-27
+
+### Changed
+
+- **Backups are throttled.** Every save used to copy the whole quests folder, so `backupCount = 10` only
+  covered the last ten auto-saves - about fifty seconds of editing - while the copy was the heaviest part
+  of a save. A backup is now taken before the first save of a session and then at most every
+  `backupIntervalMinutes` (default 10), so `backupCount` finally covers a useful period.
+- **`backupCount = 0` now really disables backups.** Previously it still copied the folder and then pruned
+  itself straight away.
+- **Save picker entries are ordered by when each save was last played** (its `level.dat` timestamp)
+  instead of alphabetically, so the save you want is at the top.
+- **The team you used per save is remembered**, so opening the book for a save you have already visited
+  goes straight to that team instead of asking again. The side-panel button still opens the picker, so
+  switching stays one click away.
+- **New `compatWorkarounds` option** (default on). With it off, the mod will not touch another mod's
+  animation switches; an unsafe mod then makes the local book refuse to open instead of crashing.
+
+### Notes
+
+- The texture-icon and quest-view-refresh diagnostics moved to debug level, so a normal launch no longer
+  logs them.
+- `RegistryAccess` capture and the quests-folder fingerprint do less work per call.
+
 ## [1.1.3] - 2026-09-27
 
 ### Fixed

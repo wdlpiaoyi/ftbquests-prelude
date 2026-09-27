@@ -1,6 +1,7 @@
 package dev.wdlpiaoyi.ftbquestsprelude.compat;
 
 import dev.wdlpiaoyi.ftbquestsprelude.FTBQuestsPrelude;
+import dev.wdlpiaoyi.ftbquestsprelude.config.PreludeConfig;
 import net.minecraftforge.fml.ModList;
 
 import java.lang.reflect.Method;
@@ -79,6 +80,13 @@ public final class UnsafeMods {
         if (!isPresent()) {
             blocked = false;
             return true;
+        }
+        if (!PreludeConfig.COMMON.compatWorkarounds.get()) {
+            blocked = true;
+            FTBQuestsPrelude.LOGGER.warn(
+                    "[Prelude] {} is present and compatWorkarounds is off; not opening the local book",
+                    UNSAFE_MODS);
+            return false;
         }
         if (!APPLIED.isEmpty() || turnOffOffenderFlags()) {
             blocked = false;

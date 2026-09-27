@@ -256,7 +256,7 @@ public final class LocalEditBridge {
 
         Quest viewed = screen.getViewedQuest();
         if (viewed != null) {
-            FTBQuestsPrelude.LOGGER.info("[Prelude] Refreshed quest view {}: tasks={}, rewards={}",
+            FTBQuestsPrelude.LOGGER.debug("[Prelude] Refreshed quest view {}: tasks={}, rewards={}",
                     viewed.id, viewed.getTasks().size(), viewed.getRewards().size());
         }
     }

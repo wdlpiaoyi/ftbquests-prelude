@@ -74,12 +74,14 @@
 | 选项 | 默认 | 范围 | 说明 |
 |---|---|---|---|
 | `backupCount` | `10` | `0`–`1000` | 保留的任务文件夹时间戳备份数量。`0` 表示关闭备份。 |
+| `backupIntervalMinutes` | `10` | `1`–`1440` | 两次自动备份之间的最小分钟数。 |
 | `autoSaveOnClose` | `true` | — | 关闭本地任务界面时写入待保存的编辑。 |
 | `autoSaveDebounceSeconds` | `5` | `1`–`300` | 停止编辑多少秒后把待保存内容写入磁盘。 |
 | `editorModeDefault` | `false` | — | 直接以编辑模式打开本地任务书。 |
 | `showEntryButtons` | `true` | — | 在菜单界面显示右上角书本按钮（唯一入口）。 |
 | `showSaveProgressButton` | `true` | — | 在任务书内显示保存图标进度按钮。 |
 | `hiddenButtonPackages` | `["com.huanghuang.rsintegration."]` | — | 要在本地任务书里隐藏的第三方按钮的 Java 包名前缀。 |
+| `compatWorkarounds` | `true` | — | 是否允许为"世界外会崩"的第三方模组做兜底（不会写对方配置文件）。 |
 
 ## 数据与备份
 

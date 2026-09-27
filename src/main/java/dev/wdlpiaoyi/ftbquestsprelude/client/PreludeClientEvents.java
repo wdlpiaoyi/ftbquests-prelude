@@ -2,6 +2,7 @@ package dev.wdlpiaoyi.ftbquestsprelude.client;
 
 import dev.wdlpiaoyi.ftbquestsprelude.FTBQuestsPrelude;
 import dev.wdlpiaoyi.ftbquestsprelude.compat.FTBQuestsCompat;
+import dev.wdlpiaoyi.ftbquestsprelude.compat.LastTeam;
 import dev.wdlpiaoyi.ftbquestsprelude.compat.LocalEditBridge;
 import dev.wdlpiaoyi.ftbquestsprelude.compat.LocalQuestSession;
 import dev.wdlpiaoyi.ftbquestsprelude.compat.SaveProgress;
@@ -23,6 +24,7 @@ import net.minecraftforge.fml.common.Mod;
 
 import java.nio.file.Path;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Client entry points for the local quest book: a small book button in the top-right corner of the
@@ -146,7 +148,15 @@ public final class PreludeClientEvents {
                 notifyOpenFailed();
             }
         } else {
-            new TeamPickerScreen(worldRoot, teams, Minecraft.getInstance().screen).openGui();
+            // Reuse the team chosen last time for this save, when it still exists.
+            UUID remembered = LastTeam.get(worldRoot.getFileName().toString());
+            if (remembered != null && teams.stream().anyMatch(team -> team.id().equals(remembered))) {
+                if (!LocalQuestSession.openSaveProgress(worldRoot, remembered)) {
+                    notifyOpenFailed();
+                }
+            } else {
+                new TeamPickerScreen(worldRoot, teams, Minecraft.getInstance().screen).openGui();
+            }
         }
     }
 

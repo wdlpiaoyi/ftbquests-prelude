@@ -21,8 +21,13 @@ public final class ClientRegistryAccess {
 
     /** Called from the client tick: remembers the registry access while one is available. */
     public static void capture() {
-        RegistryAccess access = current();
-        if (access != null) {
+        var level = Minecraft.getInstance().level;
+        if (level == null) {
+            return;
+        }
+        var access = level.registryAccess();
+        // Identity check, so the steady state is one read and no write per tick.
+        if (access != cached) {
             cached = access;
         }
     }
