@@ -4,16 +4,6 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.1.3] - 2026-09-27
-
-### Fixed
-
-- **Regression from 1.1.2: the entry button appeared on top of the quest book itself.** The
-  world-loading test ("an integrated server is running while the client level is not loaded yet") is also
-  true while the book is open during a world load, so the button was added to the quest book screen. The
-  test now excludes the quest book and FTB Library's list screens (the save/team pickers and the
-  item/fluid selectors).
-
 ## [1.1.2] - 2026-09-27
 
 ### Fixed
@@ -26,10 +16,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   book refuses to open rather than crashing.
 - Checked the other mod injecting the same method (`quest_enhance`'s `QuestButtonMixin`): it does not
   touch the client player, so it needs no workaround.
-- **The entry button now also appears on world-loading screens that are not the vanilla
-  `LevelLoadingScreen`.** Packs replace or wrap that screen (FancyMenu and friends), so the button is
-  matched by state - an integrated server is running while the client level is not loaded yet - instead
-  of by class alone.
+- **The entry button no longer tries to appear on the world-loading screen.** It cannot be done
+  reliably: that screen is not always a `LevelLoadingScreen` (packs wrap or replace it), and a
+  state-based fallback is also true while the book is open during a load, which put the button on top of
+  the quest book itself. The button is still on the title, world selection and world creation screens,
+  and the book's own progress button covers the rest.
 
 ## [1.1.1] - 2026-09-26
 

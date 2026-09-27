@@ -1,7 +1,5 @@
 package dev.wdlpiaoyi.ftbquestsprelude.client;
 
-import dev.ftb.mods.ftblibrary.ui.IScreenWrapper;
-import dev.ftb.mods.ftblibrary.ui.misc.AbstractThreePanelScreen;
 import dev.wdlpiaoyi.ftbquestsprelude.FTBQuestsPrelude;
 import dev.wdlpiaoyi.ftbquestsprelude.compat.FTBQuestsCompat;
 import dev.wdlpiaoyi.ftbquestsprelude.compat.LocalEditBridge;
@@ -10,8 +8,6 @@ import dev.wdlpiaoyi.ftbquestsprelude.compat.SaveProgress;
 import dev.wdlpiaoyi.ftbquestsprelude.compat.UnsafeMods;
 import dev.wdlpiaoyi.ftbquestsprelude.config.PreludeConfig;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.events.GuiEventListener;
-import net.minecraft.client.gui.screens.LevelLoadingScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.gui.screens.worldselection.CreateWorldScreen;
@@ -30,12 +26,11 @@ import java.util.List;
 
 /**
  * Client entry points for the local quest book: a small book button in the top-right corner of the
- * title screen, the world selection/creation screens and the world loading screen.
+ * title screen and the world selection/creation screens.
  *
- * <p>On the select-world screen (with a highlighted save) and the level loading screen, the button
- * opens the quest progress of that save by default; the plain local book is used elsewhere. Browsing
- * any save's progress is available from a button inside the quest book itself
- * (see {@link SaveProgressButton}).
+ * <p>On the select-world screen, with a highlighted save, the button opens that save's quest progress
+ * by default; the plain local book is used elsewhere. Browsing any save's progress is available from a
+ * button inside the quest book itself (see {@link SaveProgressButton}).
  *
  * <p>Every handler is defensive: any failure is logged and degrades to "no entry point" rather than
  * crashing the game.
@@ -92,56 +87,7 @@ public final class PreludeClientEvents {
     private static boolean isSupportedScreen(Screen screen) {
         return screen instanceof TitleScreen
                 || screen instanceof SelectWorldScreen
-                || screen instanceof CreateWorldScreen
-                || screen instanceof LevelLoadingScreen
-                // World-loading screens are not always a LevelLoadingScreen (packs wrap or replace it),
-                // so treat "loading into a world" as an entry screen too - but never the quest book or
-                // its pickers, which would otherwise get an entry button drawn on top of them.
-                || (isLoadingIntoWorld() && !isQuestUi(screen));
-    }
-
-    /**
-     * True for the quest book itself and for FTB Library's list screens (this mod's save/team pickers
-     * and the item/fluid selectors).
-     */
-    private static boolean isQuestUi(Screen screen) {
-        if (LocalQuestSession.isQuestScreenOpen()) {
-            return true;
-        }
-        return screen instanceof IScreenWrapper wrapper && wrapper.getGui() instanceof AbstractThreePanelScreen;
-    }
-
-    /**
-     * True while the client is loading into a world: the (integrated) server is up but the client level
-     * is not there yet. Used because the world-loading screen is not necessarily a
-     * {@code LevelLoadingScreen} - packs replace or wrap it (FancyMenu and friends).
-     */
-    private static boolean isLoadingIntoWorld() {
-        Minecraft minecraft = Minecraft.getInstance();
-        return minecraft.getSingleplayerServer() != null && minecraft.level == null;
-    }
-
-    /**
-     * The world loading screen overrides {@code render} without calling {@code super.render}, so its
-     * widgets (including our button) are never drawn. Clicking still works because input is
-     * dispatched to children, so we just render the button ourselves.
-     */
-    @SubscribeEvent
-    public static void onScreenRender(ScreenEvent.Render.Post event) {
-        try {
-            Screen screen = event.getScreen();
-            if (!(screen instanceof LevelLoadingScreen) && !isLoadingIntoWorld()) {
-                return;
-            }
-            for (GuiEventListener listener : screen.children()) {
-                if (listener instanceof IconButton button) {
-                    button.renderSelf(event.getGuiGraphics(), event.getMouseX(), event.getMouseY(),
-                            event.getPartialTick());
-                }
-            }
-        } catch (Throwable t) {
-            FTBQuestsPrelude.LOGGER.error("[Prelude] Failed to render the local quest book button", t);
-        }
+                || screen instanceof CreateWorldScreen;
     }
 
     /**
@@ -173,7 +119,7 @@ public final class PreludeClientEvents {
 
     private static void tryOpen() {
         try {
-            // From the select-world / loading screens, default to the highlighted/loading save.
+            // From the select-world screen, default to the highlighted save.
             Path worldRoot = SaveProgress.selectedWorldRoot();
             if (worldRoot != null) {
                 openSaveOrDefault(worldRoot);

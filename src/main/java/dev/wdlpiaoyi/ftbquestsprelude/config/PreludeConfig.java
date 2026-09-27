@@ -53,8 +53,8 @@ public final class PreludeConfig {
         public final ForgeConfigSpec.BooleanValue editorModeDefault;
 
         /**
-         * Show the top-right "local quest book" button on the title, world selection, world
-         * creation and world loading screens. This is the only entry point.
+         * Show the top-right "local quest book" button on the title, world selection and world
+         * creation screens. This is the only entry point.
          */
         public final ForgeConfigSpec.BooleanValue showEntryButtons;
 
@@ -101,8 +101,8 @@ public final class PreludeConfig {
                     .define("editorModeDefault", false);
 
             showEntryButtons = builder
-                    .comment("Show the top-right 'local quest book' button on the title, world selection,",
-                            "world creation and world loading screens. This is the only entry point.")
+                    .comment("Show the top-right 'local quest book' button on the title, world selection",
+                            "and world creation screens. This is the only entry point.")
                     .define("showEntryButtons", true);
 
             showSaveProgressButton = builder

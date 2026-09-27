@@ -108,14 +108,6 @@ public final class LocalQuestSession {
     }
 
     /**
-     * True while any quest screen - local or server-synced - is the screen being displayed. Used to keep
-     * menu entry buttons off the quest book itself.
-     */
-    public static boolean isQuestScreenOpen() {
-        return ClientUtils.getCurrentGuiAs(QuestScreen.class) != null;
-    }
-
-    /**
      * The player UUID to use for per-player lookups (pinned quests, claimed rewards) while no world is
      * loaded.
      *

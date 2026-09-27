@@ -75,8 +75,6 @@ messages. Dev runtime is under `run/` (git-ignored):
 - Open a **fresh `QuestScreen` per open** (that is what makes `prevScreen` / <kbd>Esc</kbd> behave).
   Switching a team must update the open screen in place + `refreshWidgets()` — never stack another
   screen, or <kbd>Esc</kbd> needs several presses.
-- `LevelLoadingScreen.render` does not call `super.render`, so its widgets are clickable but never
-  drawn; `PreludeClientEvents` draws our button manually in `ScreenEvent.Render.Post`.
 - Prefer FTB-themed icons (`PreludeIcons`) over custom art, so resource packs and FTB Quests themes
   apply. They are drawn via `BlitIcon` (vanilla `GuiGraphics.blit`) **on purpose**: FTB Library's own
   `GuiHelper.drawTexturedRect` did not render them in the test pack. That only works for icons with a

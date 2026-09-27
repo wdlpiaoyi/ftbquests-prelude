@@ -3,9 +3,9 @@
 **English** | [简体中文](README.zh_cn.md)
 
 An unofficial client-side addon for **FTB Quests** on **Minecraft 1.20.1 (Forge)**.
-It lets you open the quest book **outside a world** — at the main menu, on the world
-selection/creation screens and on the loading screen — and browse a single-player
-save's quest progress from the same book.
+It lets you open the quest book **outside a world** — at the main menu and on the world
+selection/creation screens — and browse a single-player save's quest progress from the
+same book.
 
 | | |
 |---|---|
@@ -22,14 +22,14 @@ save's quest progress from the same book.
 ## Features
 
 - **Local quest book outside a world.** A small book button in the top-right corner
-  of the title, world selection, world creation and world loading screens opens the
+  of the title, world selection and world creation screens opens the
   quest book using the quests in `<config>/ftbquests/quests`.
 - **Local editing.** In editor mode, changes (create/edit/delete quests, tasks,
   rewards, chapters, reward tables) are applied directly to that folder, with
   debounced auto-save, save-on-close and automatic timestamped backups.
 - **Single-player save progress.** Open any save's quest progress inside the book and
-  switch between its teams. Selecting a world on the select-world screen (or the
-  loading screen) opens that save's progress by default.
+  switch between its teams. Selecting a world on the select-world screen opens that
+  save's progress by default.
 - **Native UI.** The book and the save/team pickers use FTB Quests / FTB Library
   screens and themes, so they look and behave like the rest of FTB Quests.
 
@@ -51,10 +51,10 @@ save's quest progress from the same book.
 
 ### Opening the local quest book
 
-Click the **book button** in the top-right corner of the title, world selection, world
-creation or world loading screen.
+Click the **book button** in the top-right corner of the title, world selection or world
+creation screen.
 
-When a world is highlighted on the select-world screen, or a world is loading, the
+When a world is highlighted on the select-world screen, the
 button opens that **save's progress** instead of the plain local book.
 
 ### Local quest progress
