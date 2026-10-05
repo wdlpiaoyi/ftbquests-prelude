@@ -6,10 +6,13 @@ import dev.wdlpiaoyi.ftbquestsprelude.FTBQuestsPrelude;
 import dev.wdlpiaoyi.ftbquestsprelude.mixin.SelectWorldScreenAccessor;
 import dev.wdlpiaoyi.ftbquestsprelude.mixin.WorldListEntryAccessor;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.LevelLoadingScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.worldselection.CreateWorldScreen;
 import net.minecraft.client.gui.screens.worldselection.SelectWorldScreen;
 import net.minecraft.client.gui.screens.worldselection.WorldSelectionList;
+import net.minecraft.client.server.IntegratedServer;
+import net.minecraft.world.level.storage.LevelResource;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -210,7 +213,7 @@ public final class SaveProgress {
 
     /**
      * Resolves the world currently implied by the open screen: the highlighted entry on the
-     * select-world screen.
+     * select-world screen, or the world being loaded on the level loading screen.
      */
     @Nullable
     public static Path selectedWorldRoot() {
@@ -229,6 +232,13 @@ public final class SaveProgress {
             return list.getSelectedOpt()
                     .map(entry -> worldRoot(((WorldListEntryAccessor) (Object) entry).prelude$getSummary().getLevelId()))
                     .orElse(null);
+        }
+
+        if (screen instanceof LevelLoadingScreen) {
+            IntegratedServer server = Minecraft.getInstance().getSingleplayerServer();
+            if (server != null) {
+                return server.getWorldPath(LevelResource.ROOT);
+            }
         }
 
         return null;

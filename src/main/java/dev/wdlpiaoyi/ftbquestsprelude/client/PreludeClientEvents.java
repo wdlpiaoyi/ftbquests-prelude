@@ -9,6 +9,8 @@ import dev.wdlpiaoyi.ftbquestsprelude.compat.SaveProgress;
 import dev.wdlpiaoyi.ftbquestsprelude.compat.UnsafeMods;
 import dev.wdlpiaoyi.ftbquestsprelude.config.PreludeConfig;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.screens.LevelLoadingScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.gui.screens.worldselection.CreateWorldScreen;
@@ -28,11 +30,12 @@ import java.util.UUID;
 
 /**
  * Client entry points for the local quest book: a small book button in the top-right corner of the
- * title screen and the world selection/creation screens.
+ * title screen, the world selection/creation screens and the world loading screen.
  *
- * <p>On the select-world screen, with a highlighted save, the button opens that save's quest progress
- * by default; the plain local book is used elsewhere. Browsing any save's progress is available from a
- * button inside the quest book itself (see {@link SaveProgressButton}).
+ * <p>On the select-world screen (with a highlighted save) and the level loading screen, the button
+ * opens that save's quest progress by default; the plain local book is used elsewhere. Browsing any
+ * save's progress is available from a button inside the quest book itself (see
+ * {@link SaveProgressButton}).
  *
  * <p>Every handler is defensive: any failure is logged and degrades to "no entry point" rather than
  * crashing the game.
@@ -89,7 +92,34 @@ public final class PreludeClientEvents {
     private static boolean isSupportedScreen(Screen screen) {
         return screen instanceof TitleScreen
                 || screen instanceof SelectWorldScreen
-                || screen instanceof CreateWorldScreen;
+                || screen instanceof CreateWorldScreen
+                || screen instanceof LevelLoadingScreen;
+    }
+
+    /**
+     * The world loading screen overrides {@code render} without calling {@code super.render}, so its
+     * widgets (including our button) are never drawn. Clicking still works because input is dispatched
+     * to children, so we just render the button ourselves.
+     *
+     * <p>Only the vanilla screen is handled: packs that replace or wrap it (FancyMenu and friends) are
+     * left alone, which is why this deliberately does not test "loading into a world" by state.
+     */
+    @SubscribeEvent
+    public static void onScreenRender(ScreenEvent.Render.Post event) {
+        try {
+            Screen screen = event.getScreen();
+            if (!(screen instanceof LevelLoadingScreen)) {
+                return;
+            }
+            for (GuiEventListener listener : screen.children()) {
+                if (listener instanceof IconButton button) {
+                    button.renderSelf(event.getGuiGraphics(), event.getMouseX(), event.getMouseY(),
+                            event.getPartialTick());
+                }
+            }
+        } catch (Throwable t) {
+            FTBQuestsPrelude.LOGGER.error("[Prelude] Failed to render the local quest book button", t);
+        }
     }
 
     /**
@@ -121,7 +151,7 @@ public final class PreludeClientEvents {
 
     private static void tryOpen() {
         try {
-            // From the select-world screen, default to the highlighted save.
+            // From the select-world / loading screens, default to the highlighted/loading save.
             Path worldRoot = SaveProgress.selectedWorldRoot();
             if (worldRoot != null) {
                 openSaveOrDefault(worldRoot);

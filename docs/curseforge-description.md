@@ -1,5 +1,6 @@
 A client-side mod for Minecraft 1.20.1 (Forge) that opens the **FTB Quests** quest book outside a
-world: from the main menu, and the world selection and creation screens.
+world: from the main menu (`TitleScreen`), the world selection (`SelectWorldScreen`) and world
+creation (`CreateWorldScreen`) screens, and the world loading screen (`LevelLoadingScreen`).
 It also displays a single-player save's quest progress in the same book.
 
 **Requires [FTB Quests](https://www.curseforge.com/minecraft/mc-mods/ftb-quests-forge)** and its
@@ -12,9 +13,13 @@ where it is normally unreachable:
 
 | Screen | What the button opens |
 | --- | --- |
-| Title screen | The local book — the quests in `<config>/ftbquests/quests` |
-| World selection | The highlighted save's quest progress |
-| World creation | The local book |
+| `TitleScreen` (main menu) | The local book — the quests in `<config>/ftbquests/quests` |
+| `SelectWorldScreen` | The highlighted save's quest progress |
+| `CreateWorldScreen` | The local book |
+| `LevelLoadingScreen` | The loading save's quest progress |
+
+On `LevelLoadingScreen` the button is drawn by this mod, because that screen does not draw widgets
+itself; packs that replace or wrap it (FancyMenu and similar) may not show it.
 
 ## Local editing
 

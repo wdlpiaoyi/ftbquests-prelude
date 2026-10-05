@@ -22,14 +22,15 @@ same book.
 ## Features
 
 - **Local quest book outside a world.** A small book button in the top-right corner
-  of the title, world selection and world creation screens opens the
-  quest book using the quests in `<config>/ftbquests/quests`.
+  of the title, world selection, world creation and world loading screens
+  (`TitleScreen`, `SelectWorldScreen`, `CreateWorldScreen`, `LevelLoadingScreen`)
+  opens the quest book using the quests in `<config>/ftbquests/quests`.
 - **Local editing.** In editor mode, changes (create/edit/delete quests, tasks,
   rewards, chapters, reward tables) are applied directly to that folder, with
   debounced auto-save, save-on-close and automatic timestamped backups.
 - **Single-player save progress.** Open any save's quest progress inside the book and
-  switch between its teams. Selecting a world on the select-world screen opens that
-  save's progress by default.
+  switch between its teams. Selecting a world on the select-world screen - or having it
+  load on the world loading screen - opens that save's progress by default.
 - **Native UI.** The book and the save/team pickers use FTB Quests / FTB Library
   screens and themes, so they look and behave like the rest of FTB Quests.
 
@@ -51,11 +52,16 @@ same book.
 
 ### Opening the local quest book
 
-Click the **book button** in the top-right corner of the title, world selection or world
-creation screen.
+Click the **book button** in the top-right corner of the main menu (`TitleScreen`), the
+world selection (`SelectWorldScreen`), world creation (`CreateWorldScreen`) and world
+loading (`LevelLoadingScreen`) screens.
 
-When a world is highlighted on the select-world screen, the
+When a world is highlighted on the select-world screen, or while it is loading, the
 button opens that **save's progress** instead of the plain local book.
+
+`LevelLoadingScreen` is drawn by the game itself and does not draw widgets, so the button
+there is drawn by this mod; packs that replace or wrap that screen (FancyMenu and similar)
+may not show it.
 
 ### Local quest progress
 

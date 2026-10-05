@@ -4,6 +4,19 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.5] - 2026-10-05
+
+### Added
+
+- **The entry button is back on the world loading screen.** 1.1.2 removed it because the
+  "loading into a world" check it used was state-based and fired while the quest book was open, which
+  put the button on top of the book. Only the vanilla `LevelLoadingScreen` is handled now, matched by
+  screen type, so no other screen can pick the button up. Clicking it opens the loading save's quest
+  progress, the same as a highlighted world on the select-world screen.
+- Because that screen draws the progress bar itself and never draws widgets, the button there is drawn
+  by this mod; packs that replace or wrap the screen (FancyMenu and similar) are deliberately not
+  handled.
+
 ## [1.1.4] - 2026-09-27
 
 ### Changed
